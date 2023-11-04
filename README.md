@@ -2,7 +2,22 @@
 0. Download 5-core, meta-data & image features
 1. Copy non-treated data to sports/metadata
 2. Replace the name variable in build_data.py
-3. Run build_data.py
+   3. Run build_data.py
+       Es creen:
+```
+     ├─ 5-core/: 
+         ├── item_list.txt
+         ├── raw_text.txt
+         ├── test.json
+         ├── train.json
+         ├── user-item-dict.json
+         ├── user_list.txt
+         ├── val.json
+     ├── meta-data/
+         ├── 5-core.json
+         ├── meta.json
+       
+```
 4. cd codes
 4. python main.py --dataset sports
 

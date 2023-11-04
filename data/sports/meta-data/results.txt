@@ -1,0 +1,12 @@
+Epoch 144 [30.5s]: train==[2.07949=2.06074 + 0.01875]
+Epoch 145 [30.6s]: train==[2.08379=2.06497 + 0.01882]
+n_users=19445, n_items=7050
+n_interactions=139110
+n_train=118551, n_test=20559, sparsity=0.00101
+n_users=19445, n_items=7050
+n_interactions=139110
+n_train=118551, n_test=20559, sparsity=0.00101
+Epoch 145 [30.6s + 16.3s]:  val==[2.08379=2.06497 + 0.01882 + 0.00000], recall=[0.04969, 0.07624], precision=[0.00555, 0.00427], hit=[0.05523, 0.08408], ndcg=[0.02988, 0.03725]
+#####Early stop! #####
+{'precision': array([0.00554898, 0.00431731]), 'recall': array([0.05275111, 0.0820599 ]), 'ndcg': array([0.02894159, 0.0366    ]), 'hit_ratio': array([0.05533556, 0.08578041]), 'auc': 0.0}
+(python8) PS C:\Users\esthe\PycharmProjects\LATTICE-Esther\codes>
