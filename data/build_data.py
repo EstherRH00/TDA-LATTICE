@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 np.random.seed(123)
 
 folder = './sports/'
-name = 'Sports_and_Outdoors'
+name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
@@ -41,6 +41,7 @@ print("----------load data----------")
 jsons = []
 for line in open(folder + "meta-data/%d-core.json" % core).readlines():
     jsons.append(json.loads(line))
+
 
 print("----------Build dict----------")
 items = set()
@@ -105,6 +106,7 @@ with open(folder + "meta-data/meta.json", 'r') as f:
 
 print("----------Text Features----------")
 raw_text = {}
+
 for json in jsons:
     if json['asin'] in item2id:
         string = ' '
@@ -115,11 +117,13 @@ for json in jsons:
         if 'title' in json:
             string += json['title']
         if 'brand' in json:
-            string += json['title']
+            # hauria de ser brand??
+            string += json['brand']
         if 'description' in json:
             string += json['description']
         raw_text[item2id[json['asin']]] = string.replace('\n', ' ')
 texts = []
+
 with open(folder + '%d-core/raw_text.txt'%core, 'w') as f:
     for i in range(len(item2id)):
         f.write(raw_text[i] + '\n')

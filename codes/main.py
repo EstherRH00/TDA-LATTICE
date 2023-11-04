@@ -19,7 +19,10 @@ from utility.batch_test import *
 
 args = parse_args()
 
-
+device = torch.device("cpu")
+if torch.cuda.is_available():
+  device = torch.device("cuda")
+  
 class Trainer(object):
     def __init__(self, data_config):
         # argument settings
@@ -36,14 +39,16 @@ class Trainer(object):
         self.regs = eval(args.regs)
         self.decay = self.regs[0]
 
+        self.testing = args.test
+
         self.norm_adj = data_config['norm_adj']
-        self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().cuda()
+        self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
         
         image_feats = np.load('../data/{}/image_feat.npy'.format(args.dataset))
         text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
 
-        self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
-        self.model = self.model.cuda()
+        self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats, testing=self.testing)
+        self.model = self.model.to(device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.lr_scheduler = self.set_lr_scheduler()
 
@@ -68,26 +73,38 @@ class Trainer(object):
 
         n_batch = data_generator.n_train // args.batch_size + 1
         best_recall = 0
-        for epoch in (range(args.epoch)):
+        if self.testing:
+
+            print('small loop bc of testing')
+            k = 1
+        else:
+            k = args.epoch
+        for epoch in (range(k)):
             t1 = time()
             loss, mf_loss, emb_loss, reg_loss = 0., 0., 0., 0.
             n_batch = data_generator.n_train // args.batch_size + 1
             f_time, b_time, loss_time, opt_time, clip_time, emb_time = 0., 0., 0., 0., 0., 0.
             sample_time = 0.
             build_item_graph = True
+
+            if self.testing:
+                n_batch = 1
+                print('small loop bc of testing')
             for idx in (range(n_batch)):
                 self.model.train()
                 self.optimizer.zero_grad()
                 sample_t1 = time()
+                #sample
                 users, pos_items, neg_items = data_generator.sample()
-                sample_time += time() - sample_t1                                                 
+                sample_time += time() - sample_t1
+                # la primera iteracio calcula tot, despres nomes la h
                 ua_embeddings, ia_embeddings = self.model(self.norm_adj, build_item_graph=build_item_graph)
                 build_item_graph = False
                 u_g_embeddings = ua_embeddings[users]
                 pos_i_g_embeddings = ia_embeddings[pos_items]
                 neg_i_g_embeddings = ia_embeddings[neg_items]
 
-
+                # bpr
                 batch_mf_loss, batch_emb_loss, batch_reg_loss = self.bpr_loss(u_g_embeddings, pos_i_g_embeddings,
                                                                               neg_i_g_embeddings)
 

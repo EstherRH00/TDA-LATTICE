@@ -1,3 +1,11 @@
+# STEPS FOR ESTHER
+0. Download 5-core, meta-data & image features
+1. Copy non-treated data to sports/metadata
+2. Replace the name variable in build_data.py
+3. Run build_data.py
+4. cd codes
+4. python main.py --dataset sports
+
 # LATTICE
 
 PyTorch implementation for  ACM Multimedia 2021 paper: [Mining Latent Structures for Multimedia Recommendation](https://dl.acm.org/doi/10.1145/3474085.3475259)
@@ -7,8 +15,11 @@ PyTorch implementation for  ACM Multimedia 2021 paper: [Mining Latent Structures
 ## Dependencies
 
 - Python 3.6
+?
 - torch==1.5.0
+pip install torch==1.5.0 torchvision==0.6.0
 - scikit-learn==0.24.2
+pip install scikit-learn==0.24.2
 
 
 
@@ -38,6 +49,9 @@ PyTorch implementation for  ACM Multimedia 2021 paper: [Mining Latent Structures
 ## Usage
 
 Start training and inference as:
+
+
+
 
 ```
 cd codes

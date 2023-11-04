@@ -2,7 +2,8 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-
+    parser.add_argument('--test', type=bool, default=False,
+                        help='Is Esther testing?')
     parser.add_argument('--data_path', nargs='?', default='../data/',
                         help='Input data path.')
     parser.add_argument('--seed', type=int, default=123,

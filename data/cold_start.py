@@ -3,6 +3,7 @@ import numpy as np
 import os
 from collections import defaultdict
 
+print(0)
 
 np.random.seed(123)
 
@@ -17,6 +18,8 @@ for line in file.readlines():
 
 ui = json.load(open(folder + "%d-core/user-item-dict.json"%core))
 
+print(1)
+
 iu = defaultdict(list)
 for u, items in ui.items():
     for i in items:
@@ -25,6 +28,8 @@ for u, items in ui.items():
 testval = np.random.choice(len(iu), int(0.2*len(iu)), replace=False).tolist()
 test = testval[:len(testval)//2]
 val = testval[len(testval)//2:]
+
+print(2)
 
 train_ui = {}
 test_ui = {}
@@ -36,6 +41,8 @@ for u, items in ui.items():
 
 if not os.path.exists(folder+'0-core'):
     os.mkdir(folder+'0-core')
+
+print(3)
 
 json.dump(val_ui, open(folder+'0-core/val.json', 'w'))
 json.dump(test_ui, open(folder+'0-core/test.json', 'w'))
