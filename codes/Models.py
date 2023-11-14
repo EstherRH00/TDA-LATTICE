@@ -100,6 +100,8 @@ class LATTICE(nn.Module):
     def forward(self, adj, build_item_graph=False):
         image_feats = self.image_trs(self.image_embedding.weight)
         text_feats = self.text_trs(self.text_embedding.weight)
+
+        '''
         if build_item_graph:
             weight = self.softmax(self.modal_weight)
             self.image_adj = build_sim(image_feats)
@@ -130,7 +132,7 @@ class LATTICE(nn.Module):
         if (self.testing):
             print('saving because of testing')
             torch.save(h, '../data/%s/%s-core/h_31_%d.pt' % (args.dataset, args.core, args.topk))
-
+        '''
         if(self.testing):
             return None, None
         if args.cf_model == 'ngcf':
@@ -150,7 +152,7 @@ class LATTICE(nn.Module):
             all_embeddings = torch.stack(all_embeddings, dim=1)
             all_embeddings = all_embeddings.mean(dim=1, keepdim=False)            
             u_g_embeddings, i_g_embeddings = torch.split(all_embeddings, [self.n_users, self.n_items], dim=0)
-            i_g_embeddings = i_g_embeddings + F.normalize(h, p=2, dim=1)
+            # i_g_embeddings = i_g_embeddings + F.normalize(h, p=2, dim=1)
             return u_g_embeddings, i_g_embeddings
         elif args.cf_model == 'lightgcn':
             #concadena

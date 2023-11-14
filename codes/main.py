@@ -21,8 +21,8 @@ args = parse_args()
 
 device = torch.device("cpu")
 if torch.cuda.is_available():
-  device = torch.device("cuda")
-  
+    device = torch.device("cuda")
+
 class Trainer(object):
     def __init__(self, data_config):
         # argument settings

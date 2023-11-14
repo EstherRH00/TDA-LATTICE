@@ -16,6 +16,8 @@
      ├── meta-data/
          ├── 5-core.json
          ├── meta.json
+     ├── image_feat.npy
+     ├── text_feat.npy
        
 ```
 4. cd codes
