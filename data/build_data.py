@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer
 np.random.seed(123)
 
 folder = './sports/'
-name = 'Baby'
+name = 'Musical_Instruments'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
