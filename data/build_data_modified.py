@@ -19,7 +19,7 @@ from scipy import ndimage
 np.random.seed(123)
 
 folder = './sports_modified/'
-name = 'Musical_Instruments'
+name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
@@ -257,8 +257,8 @@ for d in data:
         # TDA to image
         img_link = image_links[d[0]]
 
-        if(img_link != ''):
-
+        if(img_link != '' and img_link[-3:] != 'gif'):
+            break
             # 1. image processing
             image = io.imread(img_link)
             grayscale_image = rgb2gray(image)
@@ -282,9 +282,10 @@ for d in data:
             feats_TDA[int(item2id[d[0]])] = aux
             avg_TDA.append(aux)
 
-
-avg = np.array(avg).mean(0).tolist()
-avg_TDA = np.array(avg_TDA).mean(0).tolist()
+if avg != []:
+    avg = np.array(avg).mean(0).tolist()
+if(avg_TDA != []):
+    avg_TDA = np.array(avg_TDA).mean(0).tolist()
 
 ret = []
 for i in range(len(item2id)):
