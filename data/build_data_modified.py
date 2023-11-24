@@ -19,7 +19,7 @@ from scipy import ndimage
 np.random.seed(123)
 
 folder = './sports_modified/'
-name = 'Musical_Instruments'
+name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
