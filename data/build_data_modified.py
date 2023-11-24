@@ -19,7 +19,7 @@ from scipy import ndimage
 np.random.seed(123)
 
 folder = './sports_modified/'
-name = 'Baby'
+name = 'Musical_Instruments'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
@@ -202,15 +202,10 @@ def compute_TDA(grayscale_image):
     bc_0 = np.zeros(100)
     bc_1 = np.zeros(100)
 
-    if (persistence_0.size > 0):
-        bc_0 = bc(persistence_0)  # betti numbers
-    if (persistence_1.size > 0):
-        bc_1 = bc(persistence_1)
-
     # Landscapes
-    lc = gd.representations.Landscape(num_landscapes=5, resolution=10)
-    area_under_lc_0 = 0
-    area_under_lc_1 = 0
+    lc = gd.representations.Landscape(num_landscapes=10, resolution=10)
+    area_under_lc_0 = np.zeros(10)
+    area_under_lc_1 = np.zeros(10)
 
     # Silhouettes
     p = 2
@@ -226,8 +221,10 @@ def compute_TDA(grayscale_image):
         al_0 = pt_0 / len(persistence_0_no_inf)
         sd_0 = np.std([(start + end) / 2 for start, end in persistence_0_no_inf])
         pe_0 = PE.fit_transform([persistence_0_no_inf])[0][0]
-        lc_0 = lc(persistence_0_no_inf)
-        area_under_lc_0 = np.trapz(lc_0, dx=1)
+        bc_0 = bc(persistence_0_no_inf)
+        reshaped_landscapes_0 = lc(persistence_0_no_inf).reshape(10,10)
+        for i in range(10):
+            area_under_lc_0[i] = np.trapz(reshaped_landscapes_0[i], dx=1)
         s_0 = s(persistence_0_no_inf)
         s2_0 = s2(persistence_0_no_inf)
         area_under_s_0 = np.trapz(s_0, dx=1)
@@ -237,8 +234,10 @@ def compute_TDA(grayscale_image):
         al_1 = pt_1 / len(persistence_1_no_inf)
         sd_1 = np.std([(start + end) / 2 for start, end in persistence_1_no_inf])
         pe_1 = PE.fit_transform([persistence_1_no_inf])[0][0]
-        lc_1 = lc(persistence_1_no_inf)
-        area_under_lc_1 = np.trapz(lc_1, dx=1)
+        bc_1 = bc(persistence_1_no_inf)
+        reshaped_landscapes_1 = lc(persistence_1_no_inf).reshape(10, 10)
+        for i in range(10):
+            area_under_lc_1[i] = np.trapz(reshaped_landscapes_1[i], dx=1)
         s_1 = s(persistence_1_no_inf)
         s2_1 = s2(persistence_1_no_inf)
         area_under_s_1 = np.trapz(s_1, dx=1)
@@ -246,8 +245,8 @@ def compute_TDA(grayscale_image):
 
     # Afegir descriptor
     return np.concatenate(
-        (np.array([pt_0, pt_1, al_0, al_1, sd_0, sd_1, pe_0, pe_1, area_under_lc_0, area_under_lc_1, area_under_s_0,
-                   area_under_s_1, area_under_s2_0, area_under_s2_1]), np.array(bc_0), np.array(bc_1)))
+        (np.array([pt_0, pt_1, al_0, al_1, sd_0, sd_1, pe_0, pe_1, area_under_s_0, area_under_s_1, area_under_s2_0,
+                   area_under_s2_1]), area_under_lc_0, area_under_lc_1, np.array(bc_0), np.array(bc_1)))
 
 for d in data:
     if d[0] in item2id:
@@ -258,7 +257,6 @@ for d in data:
         img_link = image_links[d[0]]
 
         if(img_link != '' and img_link[-3:] != 'gif'):
-            break
             # 1. image processing
             image = io.imread(img_link)
             grayscale_image = rgb2gray(image)
