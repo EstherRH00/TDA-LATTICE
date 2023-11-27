@@ -18,7 +18,9 @@ from scipy import ndimage
 
 np.random.seed(123)
 
-folder = './sports_modified/'
+#folder = './Musical_Instruments_modified/'
+folder = './Baby_modified/'
+# name = 'Musical_Instruments'
 name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
@@ -203,9 +205,10 @@ def compute_TDA(grayscale_image):
     bc_1 = np.zeros(100)
 
     # Landscapes
-    lc = gd.representations.Landscape(num_landscapes=10, resolution=10)
-    area_under_lc_0 = np.zeros(10)
-    area_under_lc_1 = np.zeros(10)
+    num_landscapes = 100
+    lc = gd.representations.Landscape(num_landscapes=num_landscapes, resolution=10)
+    area_under_lc_0 = np.zeros(num_landscapes)
+    area_under_lc_1 = np.zeros(num_landscapes)
 
     # Silhouettes
     p = 2
@@ -222,8 +225,8 @@ def compute_TDA(grayscale_image):
         sd_0 = np.std([(start + end) / 2 for start, end in persistence_0_no_inf])
         pe_0 = PE.fit_transform([persistence_0_no_inf])[0][0]
         bc_0 = bc(persistence_0_no_inf)
-        reshaped_landscapes_0 = lc(persistence_0_no_inf).reshape(10,10)
-        for i in range(10):
+        reshaped_landscapes_0 = lc(persistence_0_no_inf).reshape(num_landscapes,10)
+        for i in range(num_landscapes):
             area_under_lc_0[i] = np.trapz(reshaped_landscapes_0[i], dx=1)
         s_0 = s(persistence_0_no_inf)
         s2_0 = s2(persistence_0_no_inf)
@@ -235,8 +238,8 @@ def compute_TDA(grayscale_image):
         sd_1 = np.std([(start + end) / 2 for start, end in persistence_1_no_inf])
         pe_1 = PE.fit_transform([persistence_1_no_inf])[0][0]
         bc_1 = bc(persistence_1_no_inf)
-        reshaped_landscapes_1 = lc(persistence_1_no_inf).reshape(10, 10)
-        for i in range(10):
+        reshaped_landscapes_1 = lc(persistence_1_no_inf).reshape(num_landscapes, 10)
+        for i in range(num_landscapes):
             area_under_lc_1[i] = np.trapz(reshaped_landscapes_1[i], dx=1)
         s_1 = s(persistence_1_no_inf)
         s2_1 = s2(persistence_1_no_inf)

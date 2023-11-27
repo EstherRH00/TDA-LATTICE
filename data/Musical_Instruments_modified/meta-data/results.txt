@@ -1,0 +1,50 @@
+
+---------------- MUSICAL INSTRUMENTS ---------------------
+TDA mal (betti numbers de dim 0 tots zero, area sota landscape tot junt)
+
+n_train=7292, n_test=1466, sparsity=0.00681
+Epoch 145 [0.2s + 1.9s]:  val==[1.24714=1.24668 + 0.00046 + 0.00000], recall=[0.13162, 0.19425], precision=[0.01365, 0.01008], hit=[0.13576, 0.20014], ndcg=[0.070
+97, 0.08747]
+#####Early stopping steps: 10 #####
+n_interactions=8758
+n_train=7292, n_test=1466, sparsity=0.00681
+Epoch 150 [0.2s + 1.9s]:  val==[1.19735=1.19688 + 0.00047 + 0.00000], recall=[0.13162, 0.19670], precision=[0.01365, 0.01022], hit=[0.13576, 0.20294], ndcg=[0.071
+48, 0.08861]
+#####Early stop! #####
+{'precision': array([0.01385584, 0.01025192]),
+'recall': array([0.13494285, 0.19938185]),
+'ndcg': array([0.07425944, 0.0909594 ]),
+'hit_ratio': array([0.13785864, 0.20363891]),
+'auc': 0.0}
+
+
+-------------------- MUSICAL INSTRUMENTS 2 -----------
+TDA Bien - num_landscapes = 10
+
+#####Early stopping steps: 5 #####
+Epoch 196 [0.2s]: train==[0.81396=0.81339 + 0.00056]
+Epoch 197 [0.2s]: train==[0.81186=0.81129 + 0.00057]
+Epoch 198 [0.2s]: train==[0.77703=0.77646 + 0.00057]
+Epoch 199 [0.2s]: train==[0.79512=0.79454 + 0.00057]
+{'precision': array([0.01420574, 0.01028691]),
+'recall': array([0.13873338, 0.20078143]),
+'ndcg': array([0.07335957, 0.08962315]),
+'hit_ratio': array([0.14135759, 0.20503849]),
+'auc': 0.0}
+
+-------------------- MUSICAL INSTRUMENTS 2 -----------
+TDA Bien - num_landscapes = 100
+Epoch 170 [0.3s]: train==[1.00059=1.00008 + 0.00051]
+n_users=1429, n_items=900
+n_interactions=8758
+n_train=7292, n_test=1466, sparsity=0.00681
+n_users=1429, n_items=900
+n_interactions=8758
+n_train=7292, n_test=1466, sparsity=0.00681
+Epoch 170 [0.3s + 1.9s]:  val==[1.00059=1.00008 + 0.00051 + 0.00000], recall=[0.13541, 0.19285], precision=[0.01407, 0.01004], hit=[0.13996, 0.19944], ndcg=[0.073
+10, 0.08828]
+#####Early stop! #####
+{'precision': array([0.01504549, 0.01088174]),
+'recall': array([0.14631444, 0.21162818]),
+'ndcg': array([0.0752063 , 0.09185083]),
+'hit_ratio': array([0.14975507, 0.21623513]), 'auc': 0.0}
