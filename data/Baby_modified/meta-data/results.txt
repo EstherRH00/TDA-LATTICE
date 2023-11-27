@@ -1,5 +1,7 @@
 
 ------------------ BABY --------------------
+TDA mal (betti numbers de dim 0 tots zero, area sota landscape tot junt)
+
 
 Epoch 125 [31.4s]: train==[3.08000=3.06304 + 0.01696]
 n_users=19445, n_items=7050
@@ -19,6 +21,9 @@ Epoch 125 [31.4s + 16.7s]:  val==[3.08000=3.06304 + 0.01696 + 0.00000], recall=[
 
 
 ------------------- BABY 2 -----------
+TDA Bien - num_landscapes = 10
+
+
 Epoch 91 [31.8s]: train==[5.15104=5.13732 + 0.01373]
 Epoch 92 [31.4s]: train==[5.05171=5.03787 + 0.01384]
 Epoch 93 [31.5s]: train==[4.95131=4.93737 + 0.01394]
@@ -39,6 +44,7 @@ Epoch 95 [31.7s + 16.8s]:  val==[4.79886=4.78473 + 0.01412 + 0.00000], recall=[0
 'hit_ratio': array([0.0533299 , 0.08243764]), 'auc': 0.0}
 
 ------------------- BABY 3  -----------
+TDA Bien - num_landscapes = 100
 
 #####Early stopping steps: 10 #####
 Epoch 91 [31.1s]: train==[5.08170=5.06794 + 0.01376]

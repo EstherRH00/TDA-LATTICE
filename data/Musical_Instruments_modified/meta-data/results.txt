@@ -32,8 +32,9 @@ Epoch 199 [0.2s]: train==[0.79512=0.79454 + 0.00057]
 'hit_ratio': array([0.14135759, 0.20503849]),
 'auc': 0.0}
 
--------------------- MUSICAL INSTRUMENTS 2 -----------
+-------------------- MUSICAL INSTRUMENTS 3 -----------
 TDA Bien - num_landscapes = 100
+
 Epoch 170 [0.3s]: train==[1.00059=1.00008 + 0.00051]
 n_users=1429, n_items=900
 n_interactions=8758
