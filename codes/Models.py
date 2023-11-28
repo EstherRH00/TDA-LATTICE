@@ -69,8 +69,11 @@ class LATTICE(nn.Module):
             image_adj = torch.load('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
         else:
             image_adj = build_sim(self.image_embedding.weight.detach())
+            torch.save(image_adj, '../data/%s/%s-core/image_1.pt' % (args.dataset, args.core))
             image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
+            torch.save(image_adj, '../data/%s/%s-core/image_2.pt' % (args.dataset, args.core))
             image_adj = compute_normalized_laplacian(image_adj)
+            torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
             torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
             if(self.testing):
                 print('saving because of testing')
@@ -80,8 +83,11 @@ class LATTICE(nn.Module):
             text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))        
         else:
             text_adj = build_sim(self.text_embedding.weight.detach())
+            torch.save(text_adj, '../data/%s/%s-core/text_1.pt' % (args.dataset, args.core))
             text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
+            torch.save(text_adj, '../data/%s/%s-core/text_2.pt' % (args.dataset, args.core))
             text_adj = compute_normalized_laplacian(text_adj)
+            torch.save(text_adj, '../data/%s/%s-core/text_3.pt' % (args.dataset, args.core))
             torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))
             if (self.testing):
                 print('saving because of testing')
