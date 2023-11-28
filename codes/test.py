@@ -1,17 +1,35 @@
 import torch
 import numpy as np
-your_matrix = torch.tensor([[1, 4, 0],
-                           [5, 1, 3],
-                           [7, 0, 1]])
 
-identity_matrix = torch.eye(your_matrix.shape[0])
+# Example weighted adjacency matrix
+graph_matrix = np.array([[2, 0, 3, 0],
+                         [0, 0, 0, 4],
+                         [0, 0, 0, 0],
+                         [0, 5, 0, 0]])
 
-# Check if the matrix is the identity matrix
-is_identity = torch.equal(your_matrix, identity_matrix)
+# Compute out-degrees of each node
+out_degrees = np.sum(graph_matrix != 0, axis=1)
 
-if not is_identity:
-    # Find a row that is different
-    different_row_idx = torch.unique(torch.nonzero(your_matrix - identity_matrix)[:, 0])
+# Find the node with the highest and lowest out-degrees
+most_connected_node = np.argmax(out_degrees)
+least_connected_node = np.argmin(out_degrees)
 
-    new_mat = your_matrix[different_row_idx]
-    np.savetxt('./test.txt', new_mat.numpy())
+# Compute the degree range
+degree_range = np.max(out_degrees) - np.min(out_degrees)
+
+# Find the nodes closest and farthest away from a given node (e.g., node 0)
+source_node = 0
+closest_nodes = np.argsort(graph_matrix[source_node])
+farthest_nodes = np.argsort(graph_matrix[source_node])[::-1]
+
+# Compute the node weight range
+node_weights = np.diagonal(graph_matrix)
+weight_range = np.max(node_weights) - np.min(node_weights)
+
+# Print the results
+print(f"The most connected node is node {most_connected_node} with out-degree {np.max(out_degrees)}.")
+print(f"The least connected node is node {least_connected_node} with out-degree {np.min(out_degrees)}.")
+print(f"Degree range: {degree_range}.")
+print(f"Closest nodes to node {source_node}: {closest_nodes}.")
+print(f"Farthest nodes from node {source_node}: {farthest_nodes}.")
+print(f"Node weight range: {weight_range}.")
