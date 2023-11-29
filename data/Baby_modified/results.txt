@@ -65,3 +65,19 @@ Epoch 95 [30.7s + 16.1s]:  val==[4.73227=4.71811 + 0.01416 + 0.00000], recall=[0
 'ndcg': array([0.0280085 , 0.03517417]),
 'hit_ratio': array([0.05471844, 0.08295192]),
 'auc': 0.0}
+
+------------------- BABY 4  -----------
+TDA Bien - num_landscapes = 10 points_per_landscape = 100
+
+Epoch 135 [30.5s]: train==[2.43449=2.41663 + 0.01786]
+n_users=19445, n_items=7050
+n_interactions=139110
+n_train=118551, n_test=20559, sparsity=0.00101
+n_users=19445, n_items=7050
+n_interactions=139110
+n_train=118551, n_test=20559, sparsity=0.00101
+Epoch 135 [30.5s + 16.0s]:  val==[2.43449=2.41663 + 0.01786 + 0.00000], recall=[0.04807, 0.07442], precision=[0.00535, 0.00418], hit=[0.05338, 0.08269], ndcg=[0.0
+2871, 0.03618]
+#####Early stop! #####
+{'precision': array([0.00547184, 0.00428902]), 'recall': array([0.05183056, 0.08162914]), 'ndcg': array([0.02828816, 0.03606014]), 'hit_ratio': array([0.05440987,
+ 0.08531756]), 'auc': 0.0}
