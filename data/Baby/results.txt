@@ -15,24 +15,3 @@ Epoch 145 [30.6s + 16.3s]:  val==[2.08379=2.06497 + 0.01882 + 0.00000], recall=[
 'ndcg': array([0.02894159, 0.0366    ]),
 'hit_ratio': array([0.05533556, 0.08578041]),
 'auc': 0.0}
-
-
- ------------------------- MUSICAL INSTRUMENTS -------------------------
- Epoch 150 [0.2s]: train==[1.16871=1.16823 + 0.00047]
-n_users=1429, n_items=900
-n_interactions=8758
-n_train=7292, n_test=1466, sparsity=0.00681
-n_users=1429, n_items=900
-n_interactions=8758
-n_train=7292, n_test=1466, sparsity=0.00681
-Epoch 150 [0.2s + 1.9s]:  val==[1.16871=1.16823 + 0.00047 + 0.00000], recall=[0.13891, 0.19530], precision=[0.01435, 0.01015], hit=[0.14276, 0.20154], ndcg=[0.076
-30, 0.09126]
-#####Early stop! #####
-{'precision': array([0.01490553, 0.01077677]),
-'recall': array([0.14637275, 0.21104502]),
-'ndcg': array([0.07585619, 0.09254957]),
-'hit_ratio': array([0.14835549, 0.21483555]),
-'auc': 0.0}
-
-
-

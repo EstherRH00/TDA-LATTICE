@@ -49,3 +49,19 @@ Epoch 170 [0.3s + 1.9s]:  val==[1.00059=1.00008 + 0.00051 + 0.00000], recall=[0.
 'recall': array([0.14631444, 0.21162818]),
 'ndcg': array([0.0752063 , 0.09185083]),
 'hit_ratio': array([0.14975507, 0.21623513]), 'auc': 0.0}
+
+-------------------- MUSICAL INSTRUMENTS 4 -----------
+TDA Bien - num_landscapes = 10 points_per_landscape = 100
+
+Epoch 175 [0.2s]: train==[0.92892=0.92840 + 0.00052]
+n_users=1429, n_items=900
+n_interactions=8758
+n_train=7292, n_test=1466, sparsity=0.00681
+n_users=1429, n_items=900
+n_interactions=8758
+n_train=7292, n_test=1466, sparsity=0.00681
+Epoch 175 [0.2s + 1.9s]:  val==[0.92892=0.92840 + 0.00052 + 0.00000], recall=[0.13121, 0.18585], precision=[0.01365, 0.00969], hit=[0.13576, 0.19174], ndcg=[0.066
+16, 0.08041]
+#####Early stop! #####
+{'precision': array([0.01469559, 0.01102169]), 'recall': array([0.14199907, 0.21361092]), 'ndcg': array([0.07778947, 0.09624101]), 'hit_ratio': array([0.14625612,
+ 0.21903429]), 'auc': 0.0}
