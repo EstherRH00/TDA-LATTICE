@@ -6,8 +6,14 @@ import json
 from utility.parser import parse_args
 args = parse_args()
 
+def set_seed(seed):
+    rd.seed(seed)
+    np.random.seed(seed)
+
 class Data(object):
     def __init__(self, path, batch_size):
+        set_seed(args.seed)
+
         self.path = path + '/%d-core' % args.core
         self.batch_size = batch_size
 
@@ -84,7 +90,8 @@ class Data(object):
             try:
                 self.val_set[uid] = val_items
             except:
-                continue            
+                continue
+
 
     def get_adj_mat(self):
         try:

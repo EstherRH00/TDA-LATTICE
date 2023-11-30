@@ -201,11 +201,18 @@ class Trainer(object):
         shape = torch.Size(sparse_mx.shape)
         return torch.sparse.FloatTensor(indices, values, shape)
 
-def set_seed(seed):
-    np.random.seed(seed)
+def set_seed(seed, reproducibility=True):
     random.seed(seed)
-    torch.manual_seed(seed) # cpu
-    torch.cuda.manual_seed_all(seed)  # gpu
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    if reproducibility:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+    else:
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.deterministic = False
 
 if __name__ == '__main__':
     set_seed(args.seed)
