@@ -10,8 +10,8 @@ from sentence_transformers import SentenceTransformer
 
 np.random.seed(123)
 
-folder = './Musical_Instruments/'
-name = 'Musical_Instruments'
+folder = './Baby/'
+name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5

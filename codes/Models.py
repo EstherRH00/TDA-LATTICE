@@ -10,6 +10,18 @@ import torch.nn.functional as F
 from utility.parser import parse_args
 args = parse_args()
 
+def set_seed(seed, reproducibility=True):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    if reproducibility:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+    else:
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.deterministic = False
+
 device = torch.device("cpu")
 if torch.cuda.is_available():
   device = torch.device("cuda")
@@ -33,6 +45,7 @@ def build_sim(context):
 class LATTICE(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, testing=False):
         super().__init__()
+        set_seed(args.seed)
         self.n_users = n_users
         self.n_items = n_items
         self.embedding_dim = embedding_dim
