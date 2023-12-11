@@ -203,14 +203,14 @@ class LATTICE(nn.Module):
         text_2 = torch.load("../data/%s/%s-core/text_2.pt" % (args.dataset, args.core)).detach().numpy()
 
         # 1. Calcular TDA de self.tda_adj = calcular tda (text_adj)
-        # tda_image = compute_graph_tda(image_2)
-        # tda_text = compute_graph_tda(text_2)
-        # self.tda_separated = torch.cat((tda_image, tda_text))
-        self.tda_total = compute_graph_tda(0.5 * text_2 + 0.5 * image_2)
+        tda_image = compute_graph_tda(image_2)
+        tda_text = compute_graph_tda(text_2)
+        self.tda_separated = torch.cat((tda_image, tda_text))
+        # self.tda_total = compute_graph_tda(0.5 * text_2 + 0.5 * image_2)
 
         # Capa lineal sobre all_embeddings + descriptores
-        self.total_projection = nn.Linear(args.feat_embed_dim + len(self.tda_total), args.feat_embed_dim)
-        # self.separated_projection = nn.Linear(args.feat_embed_dim + len(self.tda_separated), args.feat_embed_dim)
+        # self.total_projection = nn.Linear(args.feat_embed_dim + len(self.tda_total), args.feat_embed_dim)
+        self.separated_projection = nn.Linear(args.feat_embed_dim + len(self.tda_separated), args.feat_embed_dim)
 
         self.text_original_adj = text_adj.to(device)
         self.image_original_adj = image_adj.to(device)
@@ -299,16 +299,17 @@ class LATTICE(nn.Module):
 
             # concatena y contextualiza
             # tots junts
-            concat = self.tda_total.repeat(i_g_embeddings.size(0),1)
-            together = torch.cat((i_g_embeddings, concat), dim=1)
+            # concat = self.tda_total.repeat(i_g_embeddings.size(0),1)
+            #together = torch.cat((i_g_embeddings, concat), dim=1)
             # print(together.dtype) #float64
             # print(self.total_projection.weight.dtype) # float32
-            together = together.to(torch.float32)
-            i_g_embeddings = self.total_projection(together)
+            #together = together.to(torch.float32)
+            #i_g_embeddings = self.total_projection(together)
             # separats
-            #concat = self.tda_separated.repeat(i_g_embeddings.size(0),1)
-            #together = torch.cat((i_g_embeddings, concat), dim=1)
-            #i_g_embeddings = self.separated_projection(together)
+            concat = self.tda_separated.repeat(i_g_embeddings.size(0),1)
+            together = torch.cat((i_g_embeddings, concat), dim=1)
+            together = together.to(torch.float32)
+            i_g_embeddings = self.separated_projection(together)
 
             i_g_embeddings = i_g_embeddings + F.normalize(h, p=2, dim=1)
             return u_g_embeddings, i_g_embeddings
