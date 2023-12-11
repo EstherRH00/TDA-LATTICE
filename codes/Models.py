@@ -50,6 +50,16 @@ def build_sim(context):
 
 def compute_graph_tda(graph):
     # 0. Arreglar el graf
+    epsilon = 0.000001
+
+    # treure 1 de fora la diagonal
+    out = [j for i in range(graph.shape[0]) for j in range(i + 1, graph.shape[1]) if
+           abs(graph[i, j] - 1) < epsilon]
+
+    graph = np.delete(graph, out, axis=0)
+    graph = np.delete(graph, out, axis=1)
+
+    # dissimilitud
     graph = 1 - graph
     graph[graph == 1] = np.inf
 
