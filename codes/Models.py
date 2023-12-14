@@ -207,7 +207,7 @@ class LATTICE(nn.Module):
                 print('saving because of testing')
                 torch.save(text_adj, '../data/%s/%s-core/text_adj_11_%d.pt'%(args.dataset, args.core, args.topk))
 
-
+        '''
         image_2 = torch.load("../data/%s/%s-core/image_2.pt" % (args.dataset, args.core)).detach().numpy()
         text_2 = torch.load("../data/%s/%s-core/text_2.pt" % (args.dataset, args.core)).detach().numpy()
 
@@ -230,7 +230,7 @@ class LATTICE(nn.Module):
         # self.total_projection = nn.Linear(args.feat_embed_dim + len(self.tda_total), args.feat_embed_dim)
         self.separated_projection = nn.Linear(args.feat_embed_dim + len(self.tda_separated), args.feat_embed_dim)
 
-
+        '''
         self.text_original_adj = text_adj.to(device)
         self.image_original_adj = image_adj.to(device)
 
@@ -262,10 +262,11 @@ class LATTICE(nn.Module):
             self.text_adj = build_sim(text_feats)
             self.text_adj = build_knn_neighbourhood(self.text_adj, topk=args.topk)
 
+            '''
             tda_image = compute_graph_tda(self.image_adj.detach())
             tda_text = compute_graph_tda(self.text_adj.detach())
             self.tda_separated = torch.cat((tda_image, tda_text))
-
+            '''
             if (self.testing):
                 print('saving because of testing')
                 torch.save(self.text_adj, '../data/%s/%s-core/text_adj_12_%d.pt' % (args.dataset, args.core, args.topk))
@@ -321,7 +322,7 @@ class LATTICE(nn.Module):
 
             u_g_embeddings, i_g_embeddings = torch.split(all_embeddings, [self.n_users, self.n_items], dim=0)
 
-
+            '''
             # concatena y contextualiza
             # tots junts
             # concat = self.tda_total.repeat(i_g_embeddings.size(0),1)
@@ -350,7 +351,7 @@ class LATTICE(nn.Module):
             #together = together / row_sums
 
             i_g_embeddings = self.separated_projection(together)
-
+            '''
 
             i_g_embeddings = i_g_embeddings + F.normalize(h, p=2, dim=1)
             return u_g_embeddings, i_g_embeddings
