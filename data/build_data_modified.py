@@ -206,15 +206,15 @@ def compute_TDA(grayscale_image):
     bc_1 = np.zeros(100)
 
     # Landscapes
-    num_landscapes = 10
-    points_per_landscape = 100
+    num_landscapes = 15
+    points_per_landscape = 150
     lc = gd.representations.Landscape(num_landscapes=num_landscapes, resolution=points_per_landscape)
     area_under_lc_0 = np.zeros(num_landscapes)
     area_under_lc_1 = np.zeros(num_landscapes)
 
     # Silhouettes
     p = 2
-    resolution = 100
+    resolution = 150
     s = gd.representations.Silhouette()
     s2 = gd.representations.Silhouette(weight=lambda x: np.power(x[1] - x[0], p), resolution=resolution)
     area_under_s_0 = 0

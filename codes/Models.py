@@ -48,7 +48,7 @@ def build_sim(context):
     sim = torch.mm(context_norm, context_norm.transpose(1, 0))
     return sim
 
-def compute_graph_tda(graph):
+def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, resolution = 100):
     # 0. Arreglar el graf
     epsilon = 0.000001
 
@@ -96,8 +96,6 @@ def compute_graph_tda(graph):
     bc_0 = bc(persistence_0_no_inf)
     bc_1 = bc(persistence_1_no_inf)
 
-    num_landscapes = 10
-    points_per_landscape = 100
     lc = gd.representations.Landscape(num_landscapes=num_landscapes, resolution=points_per_landscape)
 
     area_under_lc_0 = np.zeros(num_landscapes)
@@ -115,7 +113,7 @@ def compute_graph_tda(graph):
 
     # Shilouettes
     p = 2
-    resolution = 100
+
     s = gd.representations.Silhouette()
     s2 = gd.representations.Silhouette(weight=lambda x: np.power(x[1] - x[0], p), resolution=resolution)
 
@@ -129,10 +127,20 @@ def compute_graph_tda(graph):
     area_under_s_1 = np.trapz(s_1, dx=1)
     area_under_s2_1 = np.trapz(s2_1, dx=1)
 
-    return torch.tensor(np.concatenate(
+    tensor = torch.tensor(np.concatenate(
         (np.array([pt_0, pt_1, al_0, al_1, sd_0, sd_1, pe_0, pe_1, area_under_s_0, area_under_s_1, area_under_s2_0,
                    area_under_s2_1]), area_under_lc_0, area_under_lc_1, np.array(bc_0), np.array(bc_1))), requires_grad=False)
 
+    # normalizar entre 1 y 0
+    min_val = tensor.min()
+    max_val = tensor.max()
+
+    sum_val = tensor.sum()
+
+    #return (tensor - min_val) / (max_val - min_val)
+    return tensor / sum_val
+
+    # return tensor
 class LATTICE(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, testing=False):
         super().__init__()
@@ -203,9 +211,10 @@ class LATTICE(nn.Module):
         text_2 = torch.load("../data/%s/%s-core/text_2.pt" % (args.dataset, args.core)).detach().numpy()
 
         # 1. Calcular TDA de self.tda_adj = calcular tda (text_adj)
-        tda_image = compute_graph_tda(image_2)
-        tda_text = compute_graph_tda(text_2)
-        self.tda_separated = torch.cat((tda_image, tda_text))
+        # tda_image = compute_graph_tda(image_2, 10, 100)
+        # tda_text = compute_graph_tda(text_2, 2,15,15)
+        # self.tda_separated = torch.cat((tda_image, tda_text))
+        self.tda_separated = compute_graph_tda(image_2, 10, 100)
         # self.tda_total = compute_graph_tda(0.5 * text_2 + 0.5 * image_2)
 
         # Capa lineal sobre all_embeddings + descriptores
@@ -306,9 +315,22 @@ class LATTICE(nn.Module):
             #together = together.to(torch.float32)
             #i_g_embeddings = self.total_projection(together)
             # separats
+
+            # cal normalitzar?
+            #print('..................')
+            #print(max(self.tda_separated))
+            #print(min(self.tda_separated))
+            #print(max(i_g_embeddings[0]))
+            #print(min(i_g_embeddings[0]))
+
+
             concat = self.tda_separated.repeat(i_g_embeddings.size(0),1)
             together = torch.cat((i_g_embeddings, concat), dim=1)
             together = together.to(torch.float32)
+
+            #row_sums = together.sum(dim=1, keepdim=True)
+            #together = together / row_sums
+
             i_g_embeddings = self.separated_projection(together)
 
             i_g_embeddings = i_g_embeddings + F.normalize(h, p=2, dim=1)
