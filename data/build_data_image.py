@@ -17,11 +17,10 @@ from gudhi.representations import Entropy, vector_methods, Landscape, Silhouette
 from scipy import ndimage
 
 np.random.seed(123)
-
-# folder = './Musical_Instruments_modified/'
-# name = 'Musical_Instruments'
-folder = './Baby_modified/'
-name = 'Baby'
+folder = './Musical_Instruments_image/'
+name = 'Musical_Instruments'
+# folder = './Baby_modified/'
+# name = 'Baby'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5

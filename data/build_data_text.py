@@ -15,8 +15,8 @@ import re
 
 np.random.seed(123)
 
-folder = './Baby_modified_text/'
-name = 'Baby'
+folder = './Musical_Instruments_text/'
+name = 'Musical_Instruments'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
 core = 5
