@@ -40,12 +40,22 @@ class Trainer(object):
         self.decay = self.regs[0]
 
         self.testing = args.test
+        self.imageTDA = args.imageTDA
+        self.textTDA = args.textTDA
+
+        print(self.imageTDA, self.textTDA)
 
         self.norm_adj = data_config['norm_adj']
         self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
-        
-        image_feats = np.load('../data/{}/image_feat.npy'.format(args.dataset))
-        text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
+
+        if(self.imageTDA):
+            image_feats = np.load('../data/{}/image_feat_TDA.npy'.format(args.dataset))
+        else:
+            image_feats = np.load('../data/{}/image_feat.npy'.format(args.dataset))
+        if(self.textTDA):
+            text_feats = np.load('../data/{}/text_feat_TDA.npy'.format(args.dataset))
+        else:
+            text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
 
         self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats, testing=self.testing)
         self.model = self.model.to(device)

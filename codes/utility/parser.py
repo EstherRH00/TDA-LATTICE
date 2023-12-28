@@ -2,8 +2,6 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser(description="")
-    parser.add_argument('--test', type=bool, default=False,
-                        help='Is Esther testing?')
     parser.add_argument('--data_path', nargs='?', default='../data/',
                         help='Input data path.')
     parser.add_argument('--seed', type=int, default=123,
@@ -51,5 +49,11 @@ def parse_args():
     parser.add_argument('--test_flag', nargs='?', default='part',
                         help='Specify the test type from {part, full}, indicating whether the reference is done in mini-batch')
 
+    parser.add_argument('--test', type=bool, default=False,
+                        help='Is Esther testing?')
+    parser.add_argument('--imageTDA', type=bool, default=False,
+                        help='Image TDA?')
+    parser.add_argument('--textTDA', type=bool, default=False,
+                        help='Text TDA?')
 
     return parser.parse_args()

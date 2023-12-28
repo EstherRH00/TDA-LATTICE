@@ -2,9 +2,9 @@ import csv
 import pandas as pd
 import json
 
-folder = './Digital_Music/'
-res_folder = folder + 'for_other_models/'
 name = 'Digital_Music'
+folder = './'+name+'/'
+res_folder = folder + 'for_other_models/'
 
 # 0. item_list & user_list to csv
 def txt_to_csv(input_file, output_file, delimiter='\t', field_1 = 'asin', field_2='value'):
@@ -54,9 +54,6 @@ merged_df = merged_df[['userID', 'itemID', 'rating', 'timestamp']]
 # 0 si t rain, 1 si val, 2 test
 merged_df['x_label'] = 0
 
-print(merged_df)
-
-
 with open(folder + '5-core/test.json', 'r') as json_file:
     test_vals = json.load(json_file)
 
@@ -73,5 +70,4 @@ for key, values in val_vals.items():
         row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
         merged_df.at[row[0], 'x_label'] = 1
 
-print(merged_df)
 merged_df.to_csv(res_folder + name + '.inter', sep='\t', index=False)
