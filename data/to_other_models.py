@@ -2,9 +2,9 @@ import csv
 import pandas as pd
 import json
 
-folder = './Musical_Instruments_text/'
+folder = './Digital_Music/'
 res_folder = folder + 'for_other_models/'
-name = 'Musical_Instruments'
+name = 'Digital_Music'
 
 # 0. item_list & user_list to csv
 def txt_to_csv(input_file, output_file, delimiter='\t', field_1 = 'asin', field_2='value'):
@@ -74,4 +74,4 @@ for key, values in val_vals.items():
         merged_df.at[row[0], 'x_label'] = 1
 
 print(merged_df)
-merged_df.to_csv(res_folder + 'baby.inter', sep='\t', index=False)
+merged_df.to_csv(res_folder + name + '.inter', sep='\t', index=False)

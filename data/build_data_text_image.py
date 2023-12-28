@@ -7,15 +7,20 @@ from collections import defaultdict
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# TDA IMPORTS
+from gtda.homology import VietorisRipsPersistence
+from gensim.models import KeyedVectors
+import re
 from skimage.color import rgb2gray
 import gudhi as gd
 from skimage import io
 from gudhi.representations import Entropy, vector_methods, Landscape, Silhouette
+
 from scipy import ndimage
 
+
 np.random.seed(123)
-folder = './Musical_Instruments_image/'
+
+folder = './Musical_Instruments_text_image/'
 name = 'Musical_Instruments'
 bert_path = './sentence-bert/stsb-roberta-large/'
 bert_model = SentenceTransformer(bert_path)
@@ -110,7 +115,6 @@ with open(folder + "meta-data/meta.json", 'r') as f:
         jsons.append(json.loads(line))
 
 print("----------Text Features----------")
-
 raw_text = {}
 image_links = {}
 for json in jsons:
@@ -135,14 +139,129 @@ for json in jsons:
             image_links[json['asin']] = ''
 texts = []
 
+google_vectors_2 = KeyedVectors.load('google.d2v')
+
+def compute_TDA_text(sentence):
+    sentence = sentence.lower()
+    sentence = re.sub("[^a-z']", " ", sentence)
+    words = list(set([w for w in sentence.split() if w in google_vectors_2.key_to_index]))
+    n = len(words)
+
+    # print(sentence)
+
+    dissimilarity = np.zeros((n, n))
+
+    for i in range(n):
+        for j in range(i, n):
+            s = google_vectors_2.similarity(words[i], words[j])
+            dissimilarity[i][j] = 1 - s
+            dissimilarity[j][i] = 1 - s
+
+    # Instantiate topological transformer
+    VR = VietorisRipsPersistence(metric="precomputed")
+
+    # Compute persistence diagrams corresponding to each entry (only one here) in X
+    persistence = VR.fit_transform([dissimilarity])[0]
+
+    # Descriptors
+    persistence_0 = persistence[persistence[:, -1] == 0][:, :2]
+    persistence_1 = persistence[persistence[:, -1] == 1][:, :2]
+    persistence_0_no_inf = np.array([bars for bars in persistence_0 if bars[1] != np.inf])
+    persistence_1_no_inf = np.array([bars for bars in persistence_1 if bars[1] != np.inf])
+
+    # Persistencia total
+    pt_0 = np.sum(
+        np.fromiter((interval[1] - interval[0] for interval in persistence_0_no_inf), dtype=np.dtype(np.float64)))
+    pt_1 = np.sum(
+        np.fromiter((interval[1] - interval[0] for interval in persistence_1_no_inf), dtype=np.dtype(np.float64)))
+
+    # Vida mitja
+    al_0 = 0
+    al_1 = 0
+
+    # Desviacio estandard
+    sd_0 = 0
+    sd_1 = 0
+
+    # Entropia
+    PE = gd.representations.Entropy()
+    pe_0 = 0
+    pe_1 = 0
+
+    # Betti numbers
+    bc = gd.representations.vector_methods.BettiCurve()
+    bc_0 = np.zeros(100)
+    bc_1 = np.zeros(100)
+
+    # Landscapes
+    num_landscapes = 5
+    points_per_landscape = 50
+    lc = gd.representations.Landscape(num_landscapes=num_landscapes, resolution=points_per_landscape)
+    area_under_lc_0 = np.zeros(num_landscapes)
+    area_under_lc_1 = np.zeros(num_landscapes)
+
+    # Silhouettes
+    p = 2
+    resolution = 50
+    s = gd.representations.Silhouette()
+    s2 = gd.representations.Silhouette(weight=lambda x: np.power(x[1] - x[0], p), resolution=resolution)
+    area_under_s_0 = 0
+    area_under_s_1 = 0
+    area_under_s2_0 = 0
+    area_under_s2_1 = 0
+
+    if (persistence_0_no_inf.size > 0):
+        al_0 = pt_0 / len(persistence_0_no_inf)
+        sd_0 = np.std([(start + end) / 2 for start, end in persistence_0_no_inf])
+        pe_0 = PE.fit_transform([persistence_0_no_inf])[0][0]
+        bc_0 = bc(persistence_0_no_inf)
+        reshaped_landscapes_0 = lc(persistence_0_no_inf).reshape(num_landscapes,points_per_landscape)
+        for i in range(num_landscapes):
+            area_under_lc_0[i] = np.trapz(reshaped_landscapes_0[i], dx=1)
+        s_0 = s(persistence_0_no_inf)
+        s2_0 = s2(persistence_0_no_inf)
+        area_under_s_0 = np.trapz(s_0, dx=1)
+        area_under_s2_0 = np.trapz(s2_0, dx=1)
+
+    if (persistence_1_no_inf.size > 0):
+        al_1 = pt_1 / len(persistence_1_no_inf)
+        sd_1 = np.std([(start + end) / 2 for start, end in persistence_1_no_inf])
+        pe_1 = PE.fit_transform([persistence_1_no_inf])[0][0]
+        bc_1 = bc(persistence_1_no_inf)
+        reshaped_landscapes_1 = lc(persistence_1_no_inf).reshape(num_landscapes, points_per_landscape)
+        for i in range(num_landscapes):
+            area_under_lc_1[i] = np.trapz(reshaped_landscapes_1[i], dx=1)
+        s_1 = s(persistence_1_no_inf)
+        s2_1 = s2(persistence_1_no_inf)
+        area_under_s_1 = np.trapz(s_1, dx=1)
+        area_under_s2_1 = np.trapz(s2_1, dx=1)
+
+    # Afegir descriptor
+    return np.nan_to_num(np.concatenate(
+        (np.array([pt_0, pt_1, al_0, al_1, sd_0, sd_1, pe_0, pe_1, area_under_s_0, area_under_s_1, area_under_s2_0,
+                   area_under_s2_1]), area_under_lc_0, area_under_lc_1, np.array(bc_0), np.array(bc_1))), nan=0)
+
+# bert
 
 with open(folder + '%d-core/raw_text.txt'%core, 'w') as f:
     for i in range(len(item2id)):
         f.write(raw_text[i] + '\n')
         texts.append(raw_text[i] + '\n')
 sentence_embeddings = bert_model.encode(texts)
-assert sentence_embeddings.shape[0] == len(item2id)
-np.save(folder+'text_feat.npy', sentence_embeddings)
+
+complete_embeddings = []
+
+#TDA i concat
+for i in range(len(texts)):
+    original_values = sentence_embeddings[i]
+    tda = compute_TDA_text(texts[i])
+    complete_embeddings.append(np.concatenate((original_values, tda), axis=0))
+
+complete_embeddings = np.array(complete_embeddings)
+
+assert complete_embeddings.shape[0] == len(item2id)
+
+np.save(folder+'text_feat.npy', np.array(complete_embeddings))
 
 
 print("----------Image Features----------")
@@ -302,5 +421,4 @@ for i in range(len(item2id)):
 
 assert len(ret) == len(item2id)
 np.save(folder+'image_feat.npy', np.array(ret))
-
 

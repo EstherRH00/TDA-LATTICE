@@ -131,13 +131,13 @@ texts = []
 
 google_vectors_2 = KeyedVectors.load('google.d2v')
 
-def compute_TDA(sentence):
+def compute_TDA_text(sentence):
     sentence = sentence.lower()
     sentence = re.sub("[^a-z']", " ", sentence)
     words = list(set([w for w in sentence.split() if w in google_vectors_2.key_to_index]))
     n = len(words)
 
-    print(sentence)
+    # print(sentence)
 
     dissimilarity = np.zeros((n, n))
 
@@ -244,7 +244,7 @@ complete_embeddings = []
 #TDA i concat
 for i in range(len(texts)):
     original_values = sentence_embeddings[i]
-    tda = compute_TDA(texts[i])
+    tda = compute_TDA_text(texts[i])
     complete_embeddings.append(np.concatenate((original_values, tda), axis=0))
 
 complete_embeddings = np.array(complete_embeddings)
