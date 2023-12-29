@@ -14,6 +14,7 @@ from skimage.color import rgb2gray
 import gudhi as gd
 from skimage import io
 from gudhi.representations import Entropy, vector_methods, Landscape, Silhouette
+from to_other_models import to_other_models
 
 from scipy import ndimage
 
@@ -435,3 +436,4 @@ assert len(ret_TDA) == len(item2id)
 np.save(folder+'image_feat.npy', np.array(ret))
 np.save(folder+'image_feat_TDA.npy',np.array(ret_TDA))
 
+to_other_models(name)

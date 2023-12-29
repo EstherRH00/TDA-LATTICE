@@ -2,9 +2,6 @@ import csv
 import pandas as pd
 import json
 
-name = 'Baby'
-folder = './'+name+'/'
-res_folder = folder + 'for_other_models/'
 
 # 0. item_list & user_list to csv
 def txt_to_csv(input_file, output_file, delimiter='\t', field_1 = 'asin', field_2='value'):
@@ -24,50 +21,53 @@ def txt_to_csv(input_file, output_file, delimiter='\t', field_1 = 'asin', field_
             # Write the row to the CSV file
             csv_writer.writerow(row_dict)
 
+def to_other_models(name = 'Baby'):
+    folder = './' + name + '/'
+    res_folder = folder + 'for_other_models/'
 
-txt_to_csv(folder+'5-core/item_list.txt',res_folder + 'i_id_mapping.csv', field_2='itemID')
-txt_to_csv(folder+'5-core/user_list.txt',res_folder + 'u_id_mapping.csv', field_2 = 'userID' )
+    txt_to_csv(folder+'5-core/item_list.txt',res_folder + 'i_id_mapping.csv', field_2='itemID')
+    txt_to_csv(folder+'5-core/user_list.txt',res_folder + 'u_id_mapping.csv', field_2 = 'userID' )
 
-# 1. Replace ID only of the valid ones!
+    # 1. Replace ID only of the valid ones!
 
-df = pd.read_csv(res_folder + "ratings_%s.csv" % name, names=['userID', 'itemID', 'rating', 'timestamp'], header=None)
+    df = pd.read_csv(res_folder + "ratings_%s.csv" % name, names=['userID', 'itemID', 'rating', 'timestamp'], header=None)
 
-mapping_df = pd.read_csv(res_folder + 'u_id_mapping.csv', sep='\t',  names=['userID', 'newUserID'], header=0)
+    mapping_df = pd.read_csv(res_folder + 'u_id_mapping.csv', sep='\t',  names=['userID', 'newUserID'], header=0)
 
-merged_df = pd.merge(df, mapping_df, how='outer', on='userID')
-merged_df = merged_df.dropna()
-merged_df = merged_df.drop(columns=['userID'])
+    merged_df = pd.merge(df, mapping_df, how='outer', on='userID')
+    merged_df = merged_df.dropna()
+    merged_df = merged_df.drop(columns=['userID'])
 
 
-mapping_df = pd.read_csv(res_folder + 'i_id_mapping.csv', sep='\t',  names=['itemID', 'newItemID'], header=0)
+    mapping_df = pd.read_csv(res_folder + 'i_id_mapping.csv', sep='\t',  names=['itemID', 'newItemID'], header=0)
 
-merged_df = pd.merge(merged_df, mapping_df, how='outer', on='itemID')
-merged_df = merged_df.dropna()
-merged_df = merged_df.drop(columns=['itemID'])
+    merged_df = pd.merge(merged_df, mapping_df, how='outer', on='itemID')
+    merged_df = merged_df.dropna()
+    merged_df = merged_df.drop(columns=['itemID'])
 
-merged_df = merged_df.rename(columns={"newItemID": "itemID", "newUserID": "userID"})
-merged_df['userID'] = merged_df['userID'].astype(int)
-merged_df['itemID'] = merged_df['itemID'].astype(int)
+    merged_df = merged_df.rename(columns={"newItemID": "itemID", "newUserID": "userID"})
+    merged_df['userID'] = merged_df['userID'].astype(int)
+    merged_df['itemID'] = merged_df['itemID'].astype(int)
 
-merged_df = merged_df[['userID', 'itemID', 'rating', 'timestamp']]
+    merged_df = merged_df[['userID', 'itemID', 'rating', 'timestamp']]
 
-# 0 si t rain, 1 si val, 2 test
-merged_df['x_label'] = 0
+    # 0 si t rain, 1 si val, 2 test
+    merged_df['x_label'] = 0
 
-with open(folder + '5-core/test.json', 'r') as json_file:
-    test_vals = json.load(json_file)
+    with open(folder + '5-core/test.json', 'r') as json_file:
+        test_vals = json.load(json_file)
 
-for key, values in test_vals.items():
-    for val in values:
-        row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
-        merged_df.at[row[0], 'x_label'] = 2
+    for key, values in test_vals.items():
+        for val in values:
+            row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
+            merged_df.at[row[0], 'x_label'] = 2
 
-with open(folder + '5-core/val.json', 'r') as json_file:
-    val_vals = json.load(json_file)
+    with open(folder + '5-core/val.json', 'r') as json_file:
+        val_vals = json.load(json_file)
 
-for key, values in val_vals.items():
-    for val in values:
-        row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
-        merged_df.at[row[0], 'x_label'] = 1
+    for key, values in val_vals.items():
+        for val in values:
+            row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
+            merged_df.at[row[0], 'x_label'] = 1
 
-merged_df.to_csv(res_folder + name + '.inter', sep='\t', index=False)
+    merged_df.to_csv(res_folder + name + '.inter', sep='\t', index=False)
