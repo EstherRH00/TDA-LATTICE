@@ -14,7 +14,7 @@ import torch.optim as optim
 import torch.sparse as sparse
 
 from utility.parser import parse_args
-from Models import LATTICE
+from Models import LATTICE, MF, LightGCN, NGCF
 from utility.batch_test import *
 
 args = parse_args()
@@ -39,11 +39,10 @@ class Trainer(object):
         self.regs = eval(args.regs)
         self.decay = self.regs[0]
 
-        self.testing = args.test
         self.imageTDA = args.imageTDA
         self.textTDA = args.textTDA
 
-        print(self.imageTDA, self.textTDA)
+        print(self.imageTDA, self.textTDA, self.model_name)
 
         self.norm_adj = data_config['norm_adj']
         self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
@@ -57,7 +56,20 @@ class Trainer(object):
         else:
             text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
 
-        self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats, testing=self.testing)
+        if(self.model_name == 'lattice'):
+            self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
+        elif(self.model_name == 'mf'):
+            self.model = MF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                                 image_feats, text_feats)
+        elif (self.model_name == 'lightgcn'):
+            self.model = LightGCN(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                            image_feats, text_feats)
+        elif (self.model_name == 'ngcf'):
+            self.model = NGCF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                            image_feats, text_feats)
+        else:
+            raise Exception("Invalid parameter; choose between {lattice, mf, ngcf, lightgcn}")
+
         self.model = self.model.to(device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.lr_scheduler = self.set_lr_scheduler()
@@ -83,12 +95,8 @@ class Trainer(object):
 
         n_batch = data_generator.n_train // args.batch_size + 1
         best_recall = 0
-        if self.testing:
 
-            print('small loop bc of testing')
-            k = 1
-        else:
-            k = args.epoch
+        k = args.epoch
         for epoch in (range(k)):
             t1 = time()
             loss, mf_loss, emb_loss, reg_loss = 0., 0., 0., 0.
@@ -97,9 +105,6 @@ class Trainer(object):
             sample_time = 0.
             build_item_graph = True
 
-            if self.testing:
-                n_batch = 1
-                print('small loop bc of testing')
             for idx in (range(n_batch)):
                 self.model.train()
                 self.optimizer.zero_grad()

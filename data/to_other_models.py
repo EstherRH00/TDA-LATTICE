@@ -2,7 +2,7 @@ import csv
 import pandas as pd
 import json
 
-name = 'Digital_Music'
+name = 'Baby'
 folder = './'+name+'/'
 res_folder = folder + 'for_other_models/'
 

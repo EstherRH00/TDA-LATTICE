@@ -18,8 +18,6 @@ def parse_args():
                         help='Regularizations.')
     parser.add_argument('--lr', type=float, default=0.0005,
                         help='Learning rate.')
-    parser.add_argument('--model_name', nargs='?', default='lattice',
-                        help='Specify the model name.')
 
     parser.add_argument('--embed_size', type=int, default=64,
                         help='Embedding size.')
@@ -55,5 +53,8 @@ def parse_args():
                         help='Image TDA?')
     parser.add_argument('--textTDA', type=bool, default=False,
                         help='Text TDA?')
+
+    parser.add_argument('--model_name', nargs='?', default='lattice',
+                        help='Specify the model name: {lattice, mf, ngcf, lightgcn}')
 
     return parser.parse_args()

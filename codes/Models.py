@@ -142,7 +142,7 @@ def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, re
 
     # return tensor
 class LATTICE(nn.Module):
-    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, testing=False):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats):
         super().__init__()
         set_seed(args.seed)
         self.n_users = n_users
@@ -151,7 +151,6 @@ class LATTICE(nn.Module):
         self.weight_size = weight_size
         self.n_ui_layers = len(self.weight_size)
         self.weight_size = [self.embedding_dim] + self.weight_size
-        self.testing = testing
 
         # A continuació només els guarda amb una mica de gràcia per poder accedir per index de manera eficient
         self.user_embedding = nn.Embedding(n_users, self.embedding_dim)
@@ -187,9 +186,6 @@ class LATTICE(nn.Module):
             image_adj = compute_normalized_laplacian(image_adj)
             # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
             torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
-            if(self.testing):
-                print('saving because of testing')
-                torch.save(image_adj, '../data/%s/%s-core/image_adj_11_%d.pt'%(args.dataset, args.core, args.topk))
 
         if not self.testing and os.path.exists('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk)):
             text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))        
@@ -203,9 +199,6 @@ class LATTICE(nn.Module):
 
 
             torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))
-            if (self.testing):
-                print('saving because of testing')
-                torch.save(text_adj, '../data/%s/%s-core/text_adj_11_%d.pt'%(args.dataset, args.core, args.topk))
 
         '''
         image_2 = torch.load("../data/%s/%s-core/image_2.pt" % (args.dataset, args.core)).detach().numpy()
@@ -255,9 +248,6 @@ class LATTICE(nn.Module):
             weight = self.softmax(self.modal_weight)
             self.image_adj = build_sim(image_feats)
             self.image_adj = build_knn_neighbourhood(self.image_adj, topk=args.topk)
-            if (self.testing):
-                print('saving because of testing')
-                torch.save(self.image_adj, '../data/%s/%s-core/image_adj_12_%d.pt' % (args.dataset, args.core, args.topk))
 
             self.text_adj = build_sim(text_feats)
             self.text_adj = build_knn_neighbourhood(self.text_adj, topk=args.topk)
@@ -267,9 +257,6 @@ class LATTICE(nn.Module):
             tda_text = compute_graph_tda(self.text_adj.detach())
             self.tda_separated = torch.cat((tda_image, tda_text))
             '''
-            if (self.testing):
-                print('saving because of testing')
-                torch.save(self.text_adj, '../data/%s/%s-core/text_adj_12_%d.pt' % (args.dataset, args.core, args.topk))
 
             learned_adj = weight[0] * self.image_adj + weight[1] * self.text_adj
             learned_adj = compute_normalized_laplacian(learned_adj)
@@ -284,12 +271,7 @@ class LATTICE(nn.Module):
         for i in range(args.n_layers):
             #producte de matrius
             h = torch.mm(self.item_adj, h)
-        if (self.testing):
-            print('saving because of testing')
-            torch.save(h, '../data/%s/%s-core/h_31_%d.pt' % (args.dataset, args.core, args.topk))
 
-        if(self.testing):
-            return None, None
         if args.cf_model == 'ngcf':
             ego_embeddings = torch.cat((self.user_embedding.weight, self.item_id_embedding.weight), dim=0)
             all_embeddings = [ego_embeddings]
@@ -357,4 +339,86 @@ class LATTICE(nn.Module):
             return u_g_embeddings, i_g_embeddings
         elif args.cf_model == 'mf':
                 return self.user_embedding.weight, self.item_id_embedding.weight + F.normalize(h, p=2, dim=1)
+
+class MF(nn.Module):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
+        super().__init__()
+        self.n_users = n_users
+        self.n_items = n_items
+        self.embedding_dim = embedding_dim
+        self.user_embedding = nn.Embedding(n_users, embedding_dim)
+        self.item_embedding = nn.Embedding(n_items, embedding_dim)
+        nn.init.xavier_uniform_(self.user_embedding.weight)
+        nn.init.xavier_uniform_(self.item_embedding.weight)
+
+    def forward(self, adj, build_item_graph=False):
+        return self.user_embedding.weight, self.item_embedding.weight
+
+
+class NGCF(nn.Module):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
+        super().__init__()
+        self.n_users = n_users
+        self.n_items = n_items
+        self.embedding_dim = embedding_dim
+        self.weight_size = weight_size
+        self.n_ui_layers = len(self.weight_size)
+        self.dropout_list = nn.ModuleList()
+        self.GC_Linear_list = nn.ModuleList()
+        self.Bi_Linear_list = nn.ModuleList()
+
+        self.weight_size = [self.embedding_dim] + self.weight_size
+        for i in range(self.n_ui_layers):
+            self.GC_Linear_list.append(nn.Linear(self.weight_size[i], self.weight_size[i+1]))
+            self.Bi_Linear_list.append(nn.Linear(self.weight_size[i], self.weight_size[i+1]))
+            self.dropout_list.append(nn.Dropout(dropout_list[i]))
+
+        self.user_embedding = nn.Embedding(n_users, embedding_dim)
+        self.item_id_embedding = nn.Embedding(n_items, embedding_dim)
+
+        nn.init.xavier_uniform_(self.user_embedding.weight)
+        nn.init.xavier_uniform_(self.item_id_embedding.weight)
+
+    def forward(self, adj, build_item_graph):
+        ego_embeddings = torch.cat((self.user_embedding.weight, self.item_id_embedding.weight), dim=0)
+        all_embeddings = [ego_embeddings]
+        for i in range(self.n_ui_layers):
+            side_embeddings = torch.sparse.mm(adj, ego_embeddings)
+            sum_embeddings = F.leaky_relu(self.GC_Linear_list[i](side_embeddings))
+            bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
+            bi_embeddings = F.leaky_relu(self.Bi_Linear_list[i](bi_embeddings))
+            ego_embeddings = sum_embeddings + bi_embeddings
+            ego_embeddings = self.dropout_list[i](ego_embeddings)
+            norm_embeddings = F.normalize(ego_embeddings, p=2, dim=1)
+            all_embeddings += [norm_embeddings]
+
+        all_embeddings = torch.cat(all_embeddings, dim=1)
+        u_g_embeddings, i_g_embeddings = torch.split(all_embeddings, [self.n_users, self.n_items], dim=0)
+        return u_g_embeddings, i_g_embeddings
+
+class LightGCN(nn.Module):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
+        super().__init__()
+        self.n_users = n_users
+        self.n_items = n_items
+        self.embedding_dim = embedding_dim
+        self.n_ui_layers = len(weight_size)
+
+        self.user_embedding = nn.Embedding(n_users, embedding_dim)
+        self.item_id_embedding = nn.Embedding(n_items, embedding_dim)
+        nn.init.xavier_uniform_(self.user_embedding.weight)
+        nn.init.xavier_uniform_(self.item_id_embedding.weight)
+
+    def forward(self, adj, build_item_graph):
+        ego_embeddings = torch.cat((self.user_embedding.weight, self.item_id_embedding.weight), dim=0)
+        all_embeddings = [ego_embeddings]
+        for i in range(self.n_ui_layers):
+            side_embeddings = torch.sparse.mm(adj, ego_embeddings)
+            ego_embeddings = side_embeddings
+            all_embeddings += [ego_embeddings]
+        all_embeddings = torch.stack(all_embeddings, dim=1)
+        all_embeddings = all_embeddings.mean(dim=1, keepdim=False)
+        u_g_embeddings, i_g_embeddings = torch.split(all_embeddings, [self.n_users, self.n_items], dim=0)
+        return u_g_embeddings, i_g_embeddings
+
 
