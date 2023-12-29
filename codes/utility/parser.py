@@ -6,8 +6,8 @@ def parse_args():
                         help='Input data path.')
     parser.add_argument('--seed', type=int, default=123,
                         help='Random seed')
-    parser.add_argument('--dataset', nargs='?', default='baby',
-                        help='Choose a dataset from {sports, baby, clothing}')
+    parser.add_argument('--dataset', nargs='?', default='Baby',
+                        help='Choose a dataset from {Baby, Musical_Instruments, Digital_Music}')
     parser.add_argument('--verbose', type=int, default=5,
                         help='Interval of evaluation.')
     parser.add_argument('--epoch', type=int, default=200,

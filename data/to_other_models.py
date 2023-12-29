@@ -25,8 +25,8 @@ def to_other_models(name = 'Baby'):
     folder = './' + name + '/'
     res_folder = folder + 'for_other_models/'
 
-    txt_to_csv(folder+'5-core/item_list.txt',res_folder + 'i_id_mapping.csv', field_2='itemID')
-    txt_to_csv(folder+'5-core/user_list.txt',res_folder + 'u_id_mapping.csv', field_2 = 'userID' )
+    txt_to_csv(folder+'5-core/item_list.txt',folder + 'i_id_mapping.csv', field_2='itemID')
+    txt_to_csv(folder+'5-core/user_list.txt',folder + 'u_id_mapping.csv', field_2 = 'userID' )
 
     # 1. Replace ID only of the valid ones!
 
@@ -70,4 +70,6 @@ def to_other_models(name = 'Baby'):
             row = merged_df[(merged_df['userID'] == int(key)) & (merged_df['itemID'] == int(val))].index
             merged_df.at[row[0], 'x_label'] = 1
 
-    merged_df.to_csv(res_folder + name + '.inter', sep='\t', index=False)
+    merged_df.to_csv(folder + name + '.inter', sep='\t', index=False)
+
+to_other_models()

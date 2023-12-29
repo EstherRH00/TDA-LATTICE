@@ -49,21 +49,21 @@ def build_sim(context):
     return sim
 
 def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, resolution = 100):
-    # 0. Arreglar el graf
+    # 0. fix the graph
     epsilon = 0.000001
 
-    # treure 1 de fora la diagonal
+    # remove 1 from outside the diagonal
     out = [j for i in range(graph.shape[0]) for j in range(i + 1, graph.shape[1]) if
            abs(graph[i, j] - 1) < epsilon]
 
     graph = np.delete(graph, out, axis=0)
     graph = np.delete(graph, out, axis=1)
 
-    # dissimilitud
+    # dissimilarity
     graph = 1 - graph
     graph[graph == 1] = np.inf
 
-    # 1. Calculo la persistencia
+    # 1. Persistence
     persistence = FlagserPersistence().fit_transform([graph])
     persistence = persistence[0]
 
@@ -72,30 +72,31 @@ def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, re
     persistence_0_no_inf = np.array([bars for bars in persistence_0 if bars[1] != np.inf])
     persistence_1_no_inf = np.array([bars for bars in persistence_1 if bars[1] != np.inf])
 
-    # Persistencia total
+    # Total persistence
     pt_0 = np.sum(
         np.fromiter((interval[1] - interval[0] for interval in persistence_0_no_inf), dtype=np.dtype(np.float64)))
     pt_1 = np.sum(
         np.fromiter((interval[1] - interval[0] for interval in persistence_1_no_inf), dtype=np.dtype(np.float64)))
 
-    # Vida mitja
+    # Average lifetime
     al_0 = pt_0 / len(persistence_0_no_inf)
     al_1 = pt_1 / len(persistence_1_no_inf)
 
-    # Desviacio estandard
+    # Standard deviation
     sd_0 = np.std([(start + end) / 2 for start, end in persistence_0_no_inf])
     sd_1 = np.std([(start + end) / 2 for start, end in persistence_1_no_inf])
 
-    # Entropia
+    # Entropy
     PE = gd.representations.Entropy()
     pe_0 = PE.fit_transform([persistence_0_no_inf])[0][0]
     pe_1 = PE.fit_transform([persistence_1_no_inf])[0][0]
 
-    # Betti numbers
+    # Betti curve
     bc = gd.representations.vector_methods.BettiCurve()
     bc_0 = bc(persistence_0_no_inf)
     bc_1 = bc(persistence_1_no_inf)
 
+    # Landscapes
     lc = gd.representations.Landscape(num_landscapes=num_landscapes, resolution=points_per_landscape)
 
     area_under_lc_0 = np.zeros(num_landscapes)
@@ -131,16 +132,9 @@ def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, re
         (np.array([pt_0, pt_1, al_0, al_1, sd_0, sd_1, pe_0, pe_1, area_under_s_0, area_under_s_1, area_under_s2_0,
                    area_under_s2_1]), area_under_lc_0, area_under_lc_1, np.array(bc_0), np.array(bc_1))), requires_grad=False)
 
-    # normalizar entre 1 y 0
-    min_val = tensor.min()
-    max_val = tensor.max()
-
-    sum_val = tensor.sum()
-
-    #return (tensor - min_val) / (max_val - min_val)
+    # normalize before returning
     return tensor.div(torch.norm(tensor, p=2, dim=-1, keepdim=True))
 
-    # return tensor
 class LATTICE(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats):
         super().__init__()
@@ -176,7 +170,7 @@ class LATTICE(nn.Module):
             
 
         #Latent structure learning 1. initial k-nn modality-aware graphs
-        if not self.testing and os.path.exists('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk)):
+        if os.path.exists('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk)):
             image_adj = torch.load('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
         else:
             image_adj = build_sim(self.image_embedding.weight.detach())
@@ -187,7 +181,7 @@ class LATTICE(nn.Module):
             # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
             torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
 
-        if not self.testing and os.path.exists('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk)):
+        if os.path.exists('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk)):
             text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))        
         else:
             text_adj = build_sim(self.text_embedding.weight.detach())
@@ -343,6 +337,7 @@ class LATTICE(nn.Module):
 class MF(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
         super().__init__()
+        set_seed(args.seed)
         self.n_users = n_users
         self.n_items = n_items
         self.embedding_dim = embedding_dim
@@ -358,6 +353,7 @@ class MF(nn.Module):
 class NGCF(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
         super().__init__()
+        set_seed(args.seed)
         self.n_users = n_users
         self.n_items = n_items
         self.embedding_dim = embedding_dim
@@ -399,6 +395,7 @@ class NGCF(nn.Module):
 class LightGCN(nn.Module):
     def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats=None, text_feats=None):
         super().__init__()
+        set_seed(args.seed)
         self.n_users = n_users
         self.n_items = n_items
         self.embedding_dim = embedding_dim
