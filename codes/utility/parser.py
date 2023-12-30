@@ -10,7 +10,7 @@ def parse_args():
                         help='Choose a dataset from {Baby, Musical_Instruments, Digital_Music}')
     parser.add_argument('--verbose', type=int, default=5,
                         help='Interval of evaluation.')
-    parser.add_argument('--epoch', type=int, default=200,
+    parser.add_argument('--epoch', type=int, default=1000,
                         help='Number of epoch.')
     parser.add_argument('--batch_size', type=int, default=1024,
                         help='Batch size.')
