@@ -159,13 +159,34 @@ Epoch 80 [12.9s + 12.1s]:  val==[3.64613=3.63181 + 0.01433 + 0.00000], recall=[0
 
 ----- 1 -----
 
+Tue 02 Jan 2024 20:46:36 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0833    ndcg@20: 0.0364    precision@20: 0.0047    map@20: 0.0224    ,
+Test: recall@20: 0.0801    ndcg@20: 0.0349    precision@20: 0.0043    map@20: 0.0220
+
 ----- 2 -----
+
+
+Tue 02 Jan 2024 18:41:51 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0828    ndcg@20: 0.0358    precision@20: 0.0046    map@20: 0.0219    ,
+Test: recall@20: 0.0802    ndcg@20: 0.0345    precision@20: 0.0043    map@20: 0.0215
 
 ----- 3 -----
 
+Tue 02 Jan 2024 16:51:00 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0828    ndcg@20: 0.0364    precision@20: 0.0046    map@20: 0.0226    ,
+Test: recall@20: 0.0798    ndcg@20: 0.0345    precision@20: 0.0042    map@20: 0.0215
+
 ----- 4 -----
 
+Tue 02 Jan 2024 15:00:28 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0827    ndcg@20: 0.0360    precision@20: 0.0046    map@20: 0.0220    ,
+Test: recall@20: 0.0804    ndcg@20: 0.0349    precision@20: 0.0043    map@20: 0.0219
+
 ----- 5 -----
+
+02 Jan 22:37    INFO    Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0828    ndcg@20: 0.0360    precision@20: 0.0046    map@20: 0.0221    ,
+Test: recall@20: 0.0805    ndcg@20: 0.0343    precision@20: 0.0043    map@20: 0.0211
 
 ------------------------------------------ MMGCN -------------------------------------------
 
