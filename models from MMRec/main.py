@@ -12,8 +12,26 @@ import argparse
 from utils.quick_start import quick_start
 os.environ['NUMEXPR_MAX_THREADS'] = '48'
 
+import numpy as np
+import random
+import torch
+
+def set_seed(seed, reproducibility=True):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    if reproducibility:
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+    else:
+        torch.backends.cudnn.benchmark = True
+        torch.backends.cudnn.deterministic = False
 
 if __name__ == '__main__':
+    set_seed(123)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', '-m', type=str, default='SELFCFED_LGN', help='name of models')
     parser.add_argument('--dataset', '-d', type=str, default='baby', help='name of datasets')
