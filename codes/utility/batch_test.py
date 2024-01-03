@@ -7,6 +7,7 @@ import torch
 import pickle
 import numpy as np
 from time import time
+from functools import partial
 
 cores = multiprocessing.cpu_count() // 5
 
@@ -22,6 +23,7 @@ torch.backends.cudnn.deterministic = True
 
 data_generator = Data(path=args.data_path + args.dataset, batch_size=args.batch_size)
 USR_NUM, ITEM_NUM = data_generator.n_users, data_generator.n_items
+
 N_TRAIN, N_TEST = data_generator.n_train, data_generator.n_test
 BATCH_SIZE = args.batch_size
 
@@ -87,7 +89,7 @@ def get_performance(user_pos_test, r, auc, Ks):
             'ndcg': np.array(ndcg), 'hit_ratio': np.array(hit_ratio), 'auc': auc}
 
 
-def test_one_user(x):
+def test_one_user(x, n_items = ITEM_NUM):
     # user u's ratings for user u
     is_val = x[-1]
     rating = x[0]
@@ -104,7 +106,7 @@ def test_one_user(x):
     else:
         user_pos_test = data_generator.test_set[u]
 
-    all_items = set(range(ITEM_NUM))
+    all_items = set(range(n_items))
 
     test_items = list(all_items - set(training_items))
 
@@ -116,7 +118,8 @@ def test_one_user(x):
     return get_performance(user_pos_test, r, auc, Ks)
 
 
-def test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, drop_flag=False, batch_test_flag=False):
+def test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, drop_flag=False, batch_test_flag=False, n_items = ITEM_NUM):
+
     result = {'precision': np.zeros(len(Ks)), 'recall': np.zeros(len(Ks)), 'ndcg': np.zeros(len(Ks)),
               'hit_ratio': np.zeros(len(Ks)), 'auc': 0.}
     pool = multiprocessing.Pool(cores)
@@ -134,13 +137,13 @@ def test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, drop_flag=Fa
         end = (u_batch_id + 1) * u_batch_size
         user_batch = test_users[start: end]
         if batch_test_flag:
-            n_item_batchs = ITEM_NUM // i_batch_size + 1
-            rate_batch = np.zeros(shape=(len(user_batch), ITEM_NUM))
+            n_item_batchs = n_items // i_batch_size + 1
+            rate_batch = np.zeros(shape=(len(user_batch), n_items))
 
             i_count = 0
             for i_batch_id in range(n_item_batchs):
                 i_start = i_batch_id * i_batch_size
-                i_end = min((i_batch_id + 1) * i_batch_size, ITEM_NUM)
+                i_end = min((i_batch_id + 1) * i_batch_size, n_items)
 
                 item_batch = range(i_start, i_end)
                 u_g_embeddings = ua_embeddings[user_batch]
@@ -150,10 +153,10 @@ def test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, drop_flag=Fa
                 rate_batch[:, i_start: i_end] = i_rate_batch
                 i_count += i_rate_batch.shape[1]
 
-            assert i_count == ITEM_NUM
+            assert i_count == n_items
 
         else:
-            item_batch = range(ITEM_NUM)
+            item_batch = range(n_items)
             u_g_embeddings = ua_embeddings[user_batch]
             i_g_embeddings = ia_embeddings[item_batch]
             rate_batch = torch.matmul(u_g_embeddings, torch.transpose(i_g_embeddings, 0, 1))
@@ -161,7 +164,9 @@ def test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, drop_flag=Fa
         rate_batch = rate_batch.detach().cpu().numpy()
         user_batch_rating_uid = zip(rate_batch, user_batch, [is_val] * len(user_batch))
 
-        batch_result = pool.map(test_one_user, user_batch_rating_uid)
+        partial_test_one_user = partial(test_one_user, n_items=n_items)
+
+        batch_result = pool.map(partial_test_one_user, user_batch_rating_uid)
         count += len(batch_result)
 
         for re in batch_result:

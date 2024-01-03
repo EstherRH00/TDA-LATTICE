@@ -14,6 +14,7 @@ class Data(object):
     def __init__(self, path, batch_size):
         set_seed(args.seed)
 
+        self.removed = []
         self.path = path + '/%d-core' % args.core
         self.batch_size = batch_size
 
@@ -92,20 +93,18 @@ class Data(object):
             except:
                 continue
 
+    def update(self, n_items, idx_out):
+        self.n_items = n_items
+        aux = dict()
+        for key in self.train_items.keys():
+            aux[key] = [x for x in self.train_items[key] if x not in idx_out]
+        self.train_items = aux
+        self.removed = idx_out
 
     def get_adj_mat(self):
-        try:
-            t1 = time()
-            adj_mat = sp.load_npz(self.path + '/s_adj_mat.npz')
-            norm_adj_mat = sp.load_npz(self.path + '/s_norm_adj_mat.npz')
-            mean_adj_mat = sp.load_npz(self.path + '/s_mean_adj_mat.npz')
-            print('already load adj matrix', adj_mat.shape, time() - t1)
 
-        except Exception:
-            adj_mat, norm_adj_mat, mean_adj_mat = self.create_adj_mat()
-            sp.save_npz(self.path + '/s_adj_mat.npz', adj_mat)
-            sp.save_npz(self.path + '/s_norm_adj_mat.npz', norm_adj_mat)
-            sp.save_npz(self.path + '/s_mean_adj_mat.npz', mean_adj_mat)
+        adj_mat, norm_adj_mat, mean_adj_mat = self.create_adj_mat()
+
         return adj_mat, norm_adj_mat, mean_adj_mat
 
     def create_adj_mat(self):
@@ -172,8 +171,9 @@ class Data(object):
                 pos_id = np.random.randint(low=0, high=n_pos_items, size=1)[0]
                 pos_i_id = pos_items[pos_id]
 
-                if pos_i_id not in pos_batch:
-                    pos_batch.append(pos_i_id)
+                if pos_i_id not in pos_batch and pos_i_id not in self.removed:
+                    pos_batch.append(pos_i_id - sum(x < pos_i_id for x in self.removed))
+
             return pos_batch
 
         def sample_neg_items_for_u(u, num):
@@ -194,6 +194,7 @@ class Data(object):
             pos_items += sample_pos_items_for_u(u, 1)
             neg_items += sample_neg_items_for_u(u, 1)
             # neg_items += sample_neg_items_for_u(u, 3)
+
         return users, pos_items, neg_items
 
 

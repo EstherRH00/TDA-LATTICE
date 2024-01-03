@@ -14,7 +14,7 @@ import torch.optim as optim
 import torch.sparse as sparse
 
 from utility.parser import parse_args
-from Models import LATTICE, MF, LightGCN, NGCF
+from Models import LATTICE, MF, LightGCN, NGCF, LATTICE_TDA_first_graph, LATTICE_TDA_each_graph, LATTICE_TDA_dropout
 from utility.batch_test import *
 
 args = parse_args()
@@ -44,9 +44,6 @@ class Trainer(object):
 
         print(self.imageTDA, self.textTDA, self.model_name)
 
-        self.norm_adj = data_config['norm_adj']
-        self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
-
         if(self.imageTDA):
             image_feats = np.load('../data/{}/image_feat_TDA.npy'.format(args.dataset))
         else:
@@ -56,19 +53,38 @@ class Trainer(object):
         else:
             text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
 
-        if(self.model_name == 'lattice'):
-            self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
-        elif(self.model_name == 'mf'):
-            self.model = MF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
-                                 image_feats, text_feats)
-        elif (self.model_name == 'lightgcn'):
-            self.model = LightGCN(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
-                            image_feats, text_feats)
-        elif (self.model_name == 'ngcf'):
-            self.model = NGCF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
-                            image_feats, text_feats)
+        if (self.model_name == 'lattice_tda_dropout'):
+            self.norm_adj = data_config['norm_adj']
+            self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
+
+            self.model = LATTICE_TDA_dropout(self.n_users, self.n_items, self.emb_dim, self.weight_size,
+                                             self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator)
+            self.norm_adj = self.model.norm_adj
+            self.n_items = self.n_items - image_feats.shape[0] // 25
         else:
-            raise Exception("Invalid parameter; choose between {lattice, mf, ngcf, lightgcn}")
+
+            self.norm_adj = data_config['norm_adj']
+            self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
+
+            if(self.model_name == 'lattice'):
+                self.model = LATTICE(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
+            elif(self.model_name == 'lattice_tda_first_graph'):
+                self.model = LATTICE_TDA_first_graph(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
+            elif(self.model_name == 'lattice_tda_each_graph'):
+                self.model = LATTICE_TDA_each_graph(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout, image_feats, text_feats)
+            elif(self.model_name == 'mf'):
+                self.model = MF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                                     image_feats, text_feats)
+            elif (self.model_name == 'lightgcn'):
+                self.model = LightGCN(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                                image_feats, text_feats)
+            elif (self.model_name == 'ngcf'):
+                self.model = NGCF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
+                                image_feats, text_feats)
+            else:
+                raise Exception("Invalid parameter; choose between {lattice, lattice_tda_first_graph, lattice_tda_each_graph, lattice_tda_dropout, mf, ngcf, lightgcn}")
+
+
 
         self.model = self.model.to(device)
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
@@ -83,7 +99,7 @@ class Trainer(object):
         self.model.eval()
         with torch.no_grad():
             ua_embeddings, ia_embeddings = self.model(self.norm_adj, build_item_graph=True)
-        result = test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val)
+        result = test_torch(ua_embeddings, ia_embeddings, users_to_test, is_val, n_items=self.n_items)
         return result
 
     def train(self):
@@ -116,6 +132,7 @@ class Trainer(object):
                 ua_embeddings, ia_embeddings = self.model(self.norm_adj, build_item_graph=build_item_graph)
                 build_item_graph = False
                 u_g_embeddings = ua_embeddings[users]
+
                 pos_i_g_embeddings = ia_embeddings[pos_items]
                 neg_i_g_embeddings = ia_embeddings[neg_items]
 
@@ -193,6 +210,8 @@ class Trainer(object):
 
         print(test_ret)
 
+        return str(self.model_name) + "-" + str(args.dataset) , "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
+
     def bpr_loss(self, users, pos_items, neg_items):
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
         neg_scores = torch.sum(torch.mul(users, neg_items), dim=1)
@@ -230,6 +249,8 @@ def set_seed(seed, reproducibility=True):
         torch.backends.cudnn.deterministic = False
 
 if __name__ == '__main__':
+    start_time = time()
+
     set_seed(args.seed)
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
 
@@ -241,5 +262,13 @@ if __name__ == '__main__':
     config['norm_adj'] = norm_adj
 
     trainer = Trainer(data_config=config)
-    trainer.train()
+    model, aux = trainer.train()
+
+    stop_time = time()
+
+    file_path = str(model) + "-" + str(time())[7:] + ".txt"
+
+    with open(file_path, 'w') as file:
+        file.write(str(aux))
+        file.write("\nElapsed time: " + str(stop_time - start_time))
 

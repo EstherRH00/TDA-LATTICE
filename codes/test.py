@@ -12,3 +12,14 @@ print(v1.shape)
 print(v2.shape)
 
 print(np.concatenate((v1, v2), axis=0))
+
+python main.py --dataset Musical_Instruments --model lattice
+python main.py --dataset Musical_Instruments --model lattice
+python main.py --dataset Musical_Instruments --model lattice
+python main.py --dataset Musical_Instruments --model lattice
+python main.py --dataset Musical_Instruments --model lattice
+python main.py --dataset Digital_Music --model lattice
+python main.py --dataset Digital_Music --model lattice
+python main.py --dataset Digital_Music --model lattice
+python main.py --dataset Digital_Music --model lattice
+python main.py --dataset Digital_Music --model lattice
