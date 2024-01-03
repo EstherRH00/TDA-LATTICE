@@ -192,11 +192,27 @@ Test: recall@20: 0.0805    ndcg@20: 0.0343    precision@20: 0.0043    map@20: 0.
 
 ----- 1 -----
 
+Wed 03 Jan 2024 06:14:57 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0621    ndcg@20: 0.0265    precision@20: 0.0035    map@20: 0.0159    ,
+Test: recall@20: 0.0627    ndcg@20: 0.0254    precision@20: 0.0033    map@20: 0.0149
+
 ----- 2 -----
+
+Wed 03 Jan 2024 08:46:37 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0615    ndcg@20: 0.0260    precision@20: 0.0035    map@20: 0.0154    ,
+Test: recall@20: 0.0588    ndcg@20: 0.0244    precision@20: 0.0031    map@20: 0.0145
 
 ----- 3 -----
 
+Wed 03 Jan 2024 10:52:04 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0634    ndcg@20: 0.0267    precision@20: 0.0036    map@20: 0.0158    ,
+Test: recall@20: 0.0624    ndcg@20: 0.0258    precision@20: 0.0033    map@20: 0.0154
+
 ----- 4 -----
+
+Wed 03 Jan 2024 12:58:27 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.0610    ndcg@20: 0.0256    precision@20: 0.0035    map@20: 0.0151    ,
+Test: recall@20: 0.0611    ndcg@20: 0.0255    precision@20: 0.0033    map@20: 0.0153
 
 ----- 5 -----
 
@@ -204,13 +220,33 @@ Test: recall@20: 0.0805    ndcg@20: 0.0343    precision@20: 0.0043    map@20: 0.
 
 ----- 1 -----
 
+Wed 03 Jan 2024 13:23:59 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.0322    ndcg@20: 0.0141    precision@20: 0.0018    map@20: 0.0086    ,
+Test: recall@20: 0.0286    ndcg@20: 0.0121    precision@20: 0.0015    map@20: 0.0073
+
 ----- 2 -----
+
+Wed 03 Jan 2024 13:23:59 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.0322    ndcg@20: 0.0141    precision@20: 0.0018    map@20: 0.0086    ,
+Test: recall@20: 0.0286    ndcg@20: 0.0121    precision@20: 0.0015    map@20: 0.0073
 
 ----- 3 -----
 
+Wed 03 Jan 2024 13:23:59 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.0322    ndcg@20: 0.0141    precision@20: 0.0018    map@20: 0.0086    ,
+Test: recall@20: 0.0286    ndcg@20: 0.0121    precision@20: 0.0015    map@20: 0.0073
+
 ----- 4 -----
 
+Wed 03 Jan 2024 13:23:59 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.0322    ndcg@20: 0.0141    precision@20: 0.0018    map@20: 0.0086    ,
+Test: recall@20: 0.0286    ndcg@20: 0.0121    precision@20: 0.0015    map@20: 0.0073
+
 ----- 5 -----
+
+Wed 03 Jan 2024 13:23:59 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.0322    ndcg@20: 0.0141    precision@20: 0.0018    map@20: 0.0086    ,
+Test: recall@20: 0.0286    ndcg@20: 0.0121    precision@20: 0.0015    map@20: 0.0073
 
 ----------------------------------- LATTICE-Fine tuning -----------------------------------
 

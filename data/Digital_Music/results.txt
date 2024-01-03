@@ -190,25 +190,65 @@ Test: recall@20: 0.2877    ndcg@20: 0.1429    precision@20: 0.0180    map@20: 0.
 
 ----- 1 -----
 
+Wed 03 Jan 2024 01:02:48 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.2037    ndcg@20: 0.0929    precision@20: 0.0135    map@20: 0.0570    ,
+Test: recall@20: 0.2076    ndcg@20: 0.0922    precision@20: 0.0129    map@20: 0.0565
+
 ----- 2 -----
+
+Wed 03 Jan 2024 01:49:24 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.2042    ndcg@20: 0.0915    precision@20: 0.0136    map@20: 0.0550    ,
+Test: recall@20: 0.2052    ndcg@20: 0.0921    precision@20: 0.0128    map@20: 0.0569
 
 ----- 3 -----
 
+Wed 03 Jan 2024 02:39:19 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.1978    ndcg@20: 0.0883    precision@20: 0.0132    map@20: 0.0525    ,
+Test: recall@20: 0.2001    ndcg@20: 0.0885    precision@20: 0.0124    map@20: 0.0537
+
 ----- 4 -----
 
+Wed 03 Jan 2024 03:28:42 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.2081    ndcg@20: 0.0925    precision@20: 0.0138    map@20: 0.0554    ,
+Test: recall@20: 0.2127    ndcg@20: 0.0952    precision@20: 0.0132    map@20: 0.0586
+
 ----- 5 -----
+
+Wed 03 Jan 2024 04:09:56 INFO 	Parameters: ['reg_weight', 'learning_rate', 'seed']=(0.0001, 0.0005, 123),
+Valid: recall@20: 0.1971    ndcg@20: 0.0868    precision@20: 0.0132    map@20: 0.0513    ,
+Test: recall@20: 0.2001    ndcg@20: 0.0865    precision@20: 0.0125    map@20: 0.0516
 
 ------------------------------------------ VBPR -------------------------------------------
 
 ----- 1 -----
 
+Wed 03 Jan 2024 13:06:39 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.1223    ndcg@20: 0.0558    precision@20: 0.0086    map@20: 0.0336    ,
+Test: recall@20: 0.1186    ndcg@20: 0.0507    precision@20: 0.0075    map@20: 0.0296
+
 ----- 2 -----
+
+Wed 03 Jan 2024 13:06:39 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.1223    ndcg@20: 0.0558    precision@20: 0.0086    map@20: 0.0336    ,
+Test: recall@20: 0.1186    ndcg@20: 0.0507    precision@20: 0.0075    map@20: 0.0296
 
 ----- 3 -----
 
+Wed 03 Jan 2024 13:06:39 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.1223    ndcg@20: 0.0558    precision@20: 0.0086    map@20: 0.0336    ,
+Test: recall@20: 0.1186    ndcg@20: 0.0507    precision@20: 0.0075    map@20: 0.0296
+
 ----- 4 -----
 
+Wed 03 Jan 2024 13:06:39 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.1223    ndcg@20: 0.0558    precision@20: 0.0086    map@20: 0.0336    ,
+Test: recall@20: 0.1186    ndcg@20: 0.0507    precision@20: 0.0075    map@20: 0.0296
+
 ----- 5 -----
+
+Wed 03 Jan 2024 13:06:39 INFO 	Parameters: ['reg_weight', 'seed']=(0.0001, 123),
+Valid: recall@20: 0.1223    ndcg@20: 0.0558    precision@20: 0.0086    map@20: 0.0336    ,
+Test: recall@20: 0.1186    ndcg@20: 0.0507    precision@20: 0.0075    map@20: 0.0296
 
 ----------------------------------- LATTICE-Fine tuning -----------------------------------
 
@@ -222,13 +262,56 @@ Test: recall@20: 0.2874    ndcg@20: 0.1357    precision@20: 0.0178    map@20: 0.
 
 ----- 1 -----
 
+Epoch: 570
+Result:
+{'precision': array([0.02512182, 0.01817361]),
+'recall': array([0.20911828, 0.29546951]),
+'ndcg': array([0.12940294, 0.15517524]),
+'hit_ratio': array([0.23659989, 0.33044577]),
+'auc': 0.0}
+Elapsed time: 3479.1095774173737
+
 ----- 2 -----
+
+Epoch: 445
+Result: {'precision': array([0.02465259, 0.01783974]),
+'recall': array([0.20505793, 0.28987933]),
+'ndcg': array([0.12696622, 0.15246927]),
+'hit_ratio': array([0.23118571, 0.32539253]),
+'auc': 0.0}
+Elapsed time: 2753.766488313675
 
 ----- 3 -----
 
+Epoch: 485
+Result: {'precision': array([0.0245804 , 0.01782169]),
+'recall': array([0.20478964, 0.29063161]),
+'ndcg': array([0.12793664, 0.15355075]),
+'hit_ratio': array([0.23172713, 0.32539253]),
+'auc': 0.0}
+Elapsed time: 2998.6757702827454
+
 ----- 4 -----
 
+Epoch: 565
+Result:
+{'precision': array([0.02513987, 0.01819166]),
+'recall': array([0.20909197, 0.29564613]),
+'ndcg': array([0.12890077, 0.15470751]),
+'hit_ratio': array([0.23696084, 0.33098719]),
+'auc': 0.0}
+Elapsed time: 3473.835129261017
+
 ----- 5 -----
+
+Epoch: 715
+Result:
+{'precision': array([0.02564519, 0.01804728]),
+'recall': array([0.21305485, 0.2931063 ]),
+'ndcg': array([0.13180172, 0.15585889]),
+'hit_ratio': array([0.2418336 , 0.32882151]),
+'auc': 0.0}
+Elapsed time: 4361.702082872391
 
 ----------------------------- LATTICE-TDA-preprocessing: image -----------------------------
 
