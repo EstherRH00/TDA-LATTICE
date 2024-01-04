@@ -372,25 +372,60 @@ Epoch 135 [30,8s + 15,3s]:  val==[2,43338=2,41552 + 0,01786 + 0,00000], recall=[
 ----------------------------- LATTICE-TDA-preprocessing: text -----------------------------
 
 ----- 1 -----
+
 Epoch: 105
-Result: {'precision': array([0.00506557, 0.00401389]), 'recall': array([0.04802483, 0.07613672]), 'ndcg': array([0.02601284, 0.03341845]), 'hit_ratio': array([0.05039856, 0.07971201]), 'auc': 0.0}
+Result:
+{'precision': array([0.00506557, 0.00401389]),
+'recall': array([0.04802483, 0.07613672]),
+'ndcg': array([0.02601284, 0.03341845]),
+'hit_ratio': array([0.05039856, 0.07971201]),
+'auc': 0.0}
 Elapsed time: 3738.865203857422
+
 ----- 2 -----
+
 Epoch: 110
-Result: {'precision': array([0.00510671, 0.00409103]), 'recall': array([0.04846196, 0.07787067]), 'ndcg': array([0.02621558, 0.03391707]), 'hit_ratio': array([0.05075855, 0.08130625]), 'auc': 0.0}
+Result:
+{'precision': array([0.00510671, 0.00409103]),
+'recall': array([0.04846196, 0.07787067]),
+'ndcg': array([0.02621558, 0.03391707]),
+'hit_ratio': array([0.05075855, 0.08130625]),
+'auc': 0.0}
 Elapsed time: 3947.0358984470367
+
 ----- 3 -----
+
 Epoch: 100
-Result: {'precision': array([0.00505528, 0.00399589]), 'recall': array([0.04789504, 0.07600387]), 'ndcg': array([0.02599694, 0.03334829]), 'hit_ratio': array([0.05034713, 0.07945487]), 'auc': 0.0}
+Result:
+{'precision': array([0.00505528, 0.00399589]),
+'recall': array([0.04789504, 0.07600387]),
+'ndcg': array([0.02599694, 0.03334829]),
+'hit_ratio': array([0.05034713, 0.07945487]),
+'auc': 0.0}
 Elapsed time: 3567.694595813751
+
 ----- 4 -----
+
 Epoch: 100
-Result: {'precision': array([0.00506557, 0.00401131]), 'recall': array([0.04792932, 0.07619244]), 'ndcg': array([0.02603332, 0.033417  ]), 'hit_ratio': array([0.05039856, 0.07971201]), 'auc': 0.0}
+Result:
+{'precision': array([0.00506557, 0.00401131]),
+'recall': array([0.04792932, 0.07619244]),
+'ndcg': array([0.02603332, 0.033417  ]),
+'hit_ratio': array([0.05039856, 0.07971201]),
+'auc': 0.0}
 Elapsed time: 3555.6797935962677
+
 ----- 5 -----
+
 Epoch: 100
-Result: {'precision': array([0.00505528, 0.00401646]), 'recall': array([0.04787912, 0.07637243]), 'ndcg': array([0.02596148, 0.03341396]), 'hit_ratio': array([0.05034713, 0.07986629]), 'auc': 0.0}
+Result:
+{'precision': array([0.00505528, 0.00401646]),
+'recall': array([0.04787912, 0.07637243]),
+'ndcg': array([0.02596148, 0.03341396]),
+'hit_ratio': array([0.05034713, 0.07986629]),
+'auc': 0.0}
 Elapsed time: 3573.828844308853
+
 ------------------------ LATTICE-TDA-preprocessing: text and image ------------------------
 
 ----- 1 -----
