@@ -210,7 +210,7 @@ class Trainer(object):
 
         print(test_ret)
 
-        return str(self.model_name) + "-" + str(args.dataset) , "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
+        return "./logs/" + str(self.model_name) + "-" + str(args.dataset) + "-" + str(self.textTDA) + "-" + str(self.imageTDA), "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
 
     def bpr_loss(self, users, pos_items, neg_items):
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)

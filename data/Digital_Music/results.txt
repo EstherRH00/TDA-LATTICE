@@ -317,25 +317,111 @@ Elapsed time: 4361.702082872391
 
 ----- 1 -----
 
+Epoch: 600
+Result:
+ {'precision': array([0.02535643, 0.01814654]),
+'recall': array([0.21054573, 0.29609315]),
+'ndcg': array([0.13036294, 0.15558333]),
+'hit_ratio': array([0.23876557, 0.3315286 ])
+, 'auc': 0.0}
+Elapsed time: 3721.506548643112
+
 ----- 2 -----
+
+Epoch: 505
+Result:
+{'precision': array([0.02476087, 0.01791193]),
+ 'recall': array([0.20655491, 0.29181453]),
+ 'ndcg': array([0.12847458, 0.15394821]),
+ 'hit_ratio': array([0.23407327, 0.32683631]),
+ 'auc': 0.0}
+Elapsed time: 3144.2982499599457
 
 ----- 3 -----
 
+Epoch: 600
+Result:
+{'precision': array([0.02517596, 0.01814654]),
+'recall': array([0.20873084, 0.29578448]),
+'ndcg': array([0.12982507, 0.15560798]),
+'hit_ratio': array([0.23641942, 0.3315286 ]),
+'auc': 0.0}
+Elapsed time: 3711.158501148224
+
 ----- 4 -----
 
+Epoch: 505
+Result:
+{'precision': array([0.02476087, 0.01796607]),
+'recall': array([0.20604597, 0.29284984]),
+'ndcg': array([0.12810646, 0.15391316]),
+'hit_ratio': array([0.23353185, 0.32773868]),
+'auc': 0.0}
+Elapsed time: 3144.1867909431458
+
 ----- 5 -----
+
+Epoch: 345
+Result:
+{'precision': array([0.02418336, 0.01755098]),
+ 'recall': array([0.20215745, 0.28650975]),
+ 'ndcg': array([0.12313393, 0.14829033]),
+ 'hit_ratio': array([0.22883956, 0.32033929]),
+ 'auc': 0.0}
+Elapsed time: 2193.472763299942
 
 ----------------------------- LATTICE-TDA-preprocessing: text -----------------------------
 
 ----- 1 -----
 
+Epoch: 600
+Result:
+{'precision': array([0.02528424, 0.01801119]),
+'recall': array([0.21061424, 0.29291581]),
+'ndcg': array([0.13045777, 0.15510773]),
+'hit_ratio': array([0.23840462, 0.32828009]),
+'auc': 0.0}
+Elapsed time: 3698.8736062049866
+
 ----- 2 -----
+
+Epoch: 465
+Result: {'precision': array([0.02463454, 0.01770439]),
+'recall': array([0.20573953, 0.28843738]),
+'ndcg': array([0.12820491, 0.15304989]),
+'hit_ratio': array([0.23226854, 0.32304638]), 'auc': 0.0}
+Elapsed time: 2899.685168027878
 
 ----- 3 -----
 
+Epoch: 465
+Result: {'precision': array([0.02476087, 0.01771341]),
+'recall': array([0.20637394, 0.28893869]),
+'ndcg': array([0.12820368, 0.15279785]),
+'hit_ratio': array([0.23335138, 0.32322685]),
+'auc': 0.0}
+Elapsed time: 2891.3509747982025
+
 ----- 4 -----
 
+Epoch: 445
+Result: {'precision': array([0.02470673, 0.01771341]),
+'recall': array([0.20609148, 0.28784297]),
+'ndcg': array([0.12719592, 0.15194514]),
+'hit_ratio': array([0.23262949, 0.32322685]),
+'auc': 0.0}
+Elapsed time: 2792.936187982559
+
 ----- 5 -----
+
+Epoch: 570
+Result:
+ {'precision': array([0.02515791, 0.0181285 ]),
+ 'recall': array([0.20932046, 0.29512215]),
+ 'ndcg': array([0.12969384, 0.15520149]),
+ 'hit_ratio': array([0.23750226, 0.33044577]),
+ 'auc': 0.0}
+Elapsed time: 3527.8625497817993
 
 ------------------------ LATTICE-TDA-preprocessing: text and image ------------------------
 

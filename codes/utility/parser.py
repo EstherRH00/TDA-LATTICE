@@ -55,6 +55,6 @@ def parse_args():
                         help='Text TDA?')
 
     parser.add_argument('--model_name', nargs='?', default='lattice',
-                        help='Specify the model name: {lattice, mf, ngcf, lightgcn}')
+                        help='Specify the model name: {lattice, lattice_tda_first_graph, lattice_tda_each_graph, lattice_tda_dropout, mf, ngcf, lightgcn}')
 
     return parser.parse_args()
