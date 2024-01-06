@@ -42,7 +42,7 @@ class Trainer(object):
         self.imageTDA = args.imageTDA
         self.textTDA = args.textTDA
 
-        print(self.imageTDA, self.textTDA, self.model_name)
+        print(self.imageTDA, self.textTDA, self.model_name,  args.nDropout)
 
         if(self.imageTDA):
             image_feats = np.load('../data/{}/image_feat_TDA.npy'.format(args.dataset))
@@ -58,9 +58,9 @@ class Trainer(object):
             self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
 
             self.model = LATTICE_TDA_dropout(self.n_users, self.n_items, self.emb_dim, self.weight_size,
-                                             self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator)
+                                             self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator,  args.nDropout)
             self.norm_adj = self.model.norm_adj
-            self.n_items = self.n_items - image_feats.shape[0] // 25
+            self.n_items = self.n_items - image_feats.shape[0] // args.nDropout
         else:
 
             self.norm_adj = data_config['norm_adj']
@@ -210,7 +210,7 @@ class Trainer(object):
 
         print(test_ret)
 
-        return "./logs/" + str(self.model_name) + "-" + str(args.dataset) + "-" + str(self.textTDA) + "-" + str(self.imageTDA), "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
+        return "./logs/" + str(self.model_name) + str(args.nDropout)+ "-" + str(args.dataset) + "-" + str(self.textTDA) + "-" + str(self.imageTDA), "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
 
     def bpr_loss(self, users, pos_items, neg_items):
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
@@ -272,3 +272,25 @@ if __name__ == '__main__':
         file.write(str(aux))
         file.write("\nElapsed time: " + str(stop_time - start_time))
 
+'''
+
+python main.py --dataset Baby --model lattice_tda_dropout --nDropout 5
+python main.py --dataset Baby --model lattice_tda_dropout --nDropout 10
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
+
+'''

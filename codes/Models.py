@@ -54,7 +54,7 @@ def build_sim(context):
 def compute_persistence(gr):
     # 0. fix the fraoh
     epsilon = 0.000001
-
+    np.fill_diagonal(gr, 1)
     # remove 1 from outside the diagonal
     out = [j for i in range(gr.shape[0]) for j in range(i + 1, gr.shape[1]) if
            abs(gr[i, j] - 1) < epsilon]
@@ -64,7 +64,7 @@ def compute_persistence(gr):
 
     # dissimilarity
     gr = 1 - gr
-    gr[gr == 1] = np.inf
+    gr[abs(gr - 1) < epsilon] = np.inf
 
     persistence = FlagserPersistence().fit_transform([gr])[0]
 
@@ -127,7 +127,7 @@ def difference(original_values, new_graph):
 def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, resolution = 100):
     # 0. fix the graph
     epsilon = 0.000001
-
+    np.fill_diagonal(graph, 1)
     # remove 1 from outside the diagonal
     out = [j for i in range(graph.shape[0]) for j in range(i + 1, graph.shape[1]) if
            abs(graph[i, j] - 1) < epsilon]
@@ -137,7 +137,7 @@ def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, re
 
     # dissimilarity
     graph = 1 - graph
-    graph[graph == 1] = np.inf
+    graph[ abs(graph - 1) < epsilon] = np.inf
 
     # 1. Persistence
     persistence = FlagserPersistence().fit_transform([graph])
@@ -244,28 +244,22 @@ class LATTICE(nn.Module):
         self.text_embedding = nn.Embedding.from_pretrained(torch.Tensor(text_feats), freeze=False)
 
         # Latent structure learning 1. initial k-nn modality-aware graphs
-        if os.path.exists('../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk)):
-            image_adj = torch.load('../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk))
-        else:
-            image_adj = build_sim(self.image_embedding.weight.detach())
-            # torch.save(image_adj, '../data/%s/%s-core/image_1.pt' % (args.dataset, args.core))
-            image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
-            torch.save(image_adj, '../data/%s/%s-core/image_2.pt' % (args.dataset, args.core))
-            image_adj = compute_normalized_laplacian(image_adj)
-            # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
-            torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk))
+        image_adj = build_sim(self.image_embedding.weight.detach())
+        # torch.save(image_adj, '../data/%s/%s-core/image_1.pt' % (args.dataset, args.core))
+        image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
+        # torch.save(image_adj, '../data/%s/%s-core/image_2.pt' % (args.dataset, args.core))
+        image_adj = compute_normalized_laplacian(image_adj)
+        # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
+        # torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk))
 
-        if os.path.exists('../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk)):
-            text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk))
-        else:
-            text_adj = build_sim(self.text_embedding.weight.detach())
-            # torch.save(text_adj, '../data/%s/%s-core/text_1.pt' % (args.dataset, args.core))
-            text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
-            torch.save(text_adj, '../data/%s/%s-core/text_2.pt' % (args.dataset, args.core))
-            text_adj = compute_normalized_laplacian(text_adj)
-            # torch.save(text_adj, '../data/%s/%s-core/text_3.pt' % (args.dataset, args.core))
+        text_adj = build_sim(self.text_embedding.weight.detach())
+        # torch.save(text_adj, '../data/%s/%s-core/text_1.pt' % (args.dataset, args.core))
+        text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
+        torch.save(text_adj, '../data/%s/%s-core/text_2.pt' % (args.dataset, args.core))
+        text_adj = compute_normalized_laplacian(text_adj)
+        # torch.save(text_adj, '../data/%s/%s-core/text_3.pt' % (args.dataset, args.core))
 
-            torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk))
+        # torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk))
 
         self.text_original_adj = text_adj.to(device)
         self.image_original_adj = image_adj.to(device)
@@ -373,34 +367,27 @@ class LATTICE_TDA_first_graph(nn.Module):
         self.text_embedding = nn.Embedding.from_pretrained(torch.Tensor(text_feats), freeze=False)
             
 
-        #Latent structure learning 1. initial k-nn modality-aware graphs
-        if os.path.exists('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk)):
-            image_adj = torch.load('../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
-        else:
-            image_adj = build_sim(self.image_embedding.weight.detach())
-            # torch.save(image_adj, '../data/%s/%s-core/image_1.pt' % (args.dataset, args.core))
-            image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
-            torch.save(image_adj, '../data/%s/%s-core/image_2.pt' % (args.dataset, args.core))
-            image_adj = compute_normalized_laplacian(image_adj)
-            # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
-            torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
 
-        if os.path.exists('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk)):
-            text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))        
-        else:
-            text_adj = build_sim(self.text_embedding.weight.detach())
-            # torch.save(text_adj, '../data/%s/%s-core/text_1.pt' % (args.dataset, args.core))
-            text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
-            torch.save(text_adj, '../data/%s/%s-core/text_2.pt' % (args.dataset, args.core))
-            text_adj = compute_normalized_laplacian(text_adj)
-            # torch.save(text_adj, '../data/%s/%s-core/text_3.pt' % (args.dataset, args.core))
+        image_adj = build_sim(self.image_embedding.weight.detach())
+        # torch.save(image_adj, '../data/%s/%s-core/image_1.pt' % (args.dataset, args.core))
+        image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
 
+        image_2 = image_adj.numpy().copy()
+        #torch.save(image_adj, '../data/%s/%s-core/image_2.pt' % (args.dataset, args.core))
+        image_adj = compute_normalized_laplacian(image_adj)
+        # torch.save(image_adj, '../data/%s/%s-core/image_3.pt' % (args.dataset, args.core))
+        # torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt'%(args.dataset, args.core, args.topk))
 
-            torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))
+        text_adj = build_sim(self.text_embedding.weight.detach())
+        # torch.save(text_adj, '../data/%s/%s-core/text_1.pt' % (args.dataset, args.core))
+        text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
+        text_2 = text_adj.numpy().copy()
+        # torch.save(text_adj, '../data/%s/%s-core/text_2.pt' % (args.dataset, args.core))
+        text_adj = compute_normalized_laplacian(text_adj)
+        # torch.save(text_adj, '../data/%s/%s-core/text_3.pt' % (args.dataset, args.core))
 
+        # torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt'%(args.dataset, args.core, args.topk))
 
-        image_2 = torch.load("../data/%s/%s-core/image_2.pt" % (args.dataset, args.core)).detach().numpy()
-        text_2 = torch.load("../data/%s/%s-core/text_2.pt" % (args.dataset, args.core)).detach().numpy()
 
         # 1. Calcular TDA de self.tda_adj = calcular tda (text_adj)
 
@@ -408,15 +395,10 @@ class LATTICE_TDA_first_graph(nn.Module):
         tda_text = compute_graph_tda(text_2)
         self.tda_separated = torch.cat((tda_image, tda_text))
 
-        self.tda_separated = nn.Parameter(self.tda_separated)
-
         self.tda_drop = nn.Dropout(0.1)
         # self.tda_drop = nn.Identity()
 
-        # self.tda_total = compute_graph_tda(0.5 * text_2 + 0.5 * image_2)
-
         # Capa lineal sobre all_embeddings + descriptores
-        # self.total_projection = nn.Linear(args.feat_embed_dim + len(self.tda_total), args.feat_embed_dim)
         self.separated_projection = nn.Linear(args.feat_embed_dim + len(self.tda_separated), args.feat_embed_dim)
 
         self.text_original_adj = text_adj.to(device)
@@ -424,7 +406,6 @@ class LATTICE_TDA_first_graph(nn.Module):
 
         self.image_trs = nn.Linear(image_feats.shape[1], args.feat_embed_dim)
         self.text_trs = nn.Linear(text_feats.shape[1], args.feat_embed_dim)
-
 
         self.modal_weight = nn.Parameter(torch.Tensor([0.5, 0.5]))
         self.softmax = nn.Softmax(dim=0)
@@ -515,21 +496,15 @@ class LATTICE_TDA_each_graph(nn.Module):
         self.text_embedding = nn.Embedding.from_pretrained(torch.Tensor(text_feats), freeze=False)
 
         # Latent structure learning 1. initial k-nn modality-aware graphs
-        if os.path.exists('../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk)):
-            image_adj = torch.load('../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk))
-        else:
-            image_adj = build_sim(self.image_embedding.weight.detach())
-            image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
-            image_adj = compute_normalized_laplacian(image_adj)
-            torch.save(image_adj, '../data/%s/%s-core/image_adj_%d.pt' % (args.dataset, args.core, args.topk))
+        image_adj = build_sim(self.image_embedding.weight.detach())
+        image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
+        image_adj = compute_normalized_laplacian(image_adj)
 
-        if os.path.exists('../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk)):
-            text_adj = torch.load('../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk))
-        else:
-            text_adj = build_sim(self.text_embedding.weight.detach())
-            text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
-            text_adj = compute_normalized_laplacian(text_adj)
-            torch.save(text_adj, '../data/%s/%s-core/text_adj_%d.pt' % (args.dataset, args.core, args.topk))
+
+        text_adj = build_sim(self.text_embedding.weight.detach())
+        text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
+        text_adj = compute_normalized_laplacian(text_adj)
+
 
         self.text_original_adj = text_adj.to(device)
         self.image_original_adj = image_adj.to(device)
@@ -600,10 +575,10 @@ class LATTICE_TDA_each_graph(nn.Module):
 
 
 class LATTICE_TDA_dropout(nn.Module):
-    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, norm_adj, data_generator):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, norm_adj, data_generator, n_dropout):
         super().__init__()
         set_seed(args.seed)
-        p = image_feats.shape[0] // 25
+        p = image_feats.shape[0] // n_dropout
 
         self.n_users = n_users
         self.n_items = n_items - p
@@ -649,16 +624,34 @@ class LATTICE_TDA_dropout(nn.Module):
         smallest_difference = None
         best_out = None
 
-        for _ in range(25):
+        for _ in range(10):
+            empty_users = True
+
             aux_img = image_2.copy()
             aux_text = image_2.copy()
 
-            out = random.sample(range(image_2.shape[0]), p)
+            out = []
+            tries = 0
+            while(empty_users or len(out) < p):
+
+                aux = random.randint(0, image_2.shape[0]-1)
+                while aux in out:
+                    aux = random.randint(0, image_2.shape[0]-1)
+
+                empty_users = any(set(lst).issubset(set(out + [aux])) for lst in data_generator.train_items.values())
+                tries += 1
+                if(not empty_users):
+                    out.append(aux)
+                if tries == 3*p:
+                    raise Exception("Todo mal")
 
             aux_img = np.delete(aux_img, out, axis=0)
             aux_img = np.delete(aux_img, out, axis=1)
             aux_text = np.delete(aux_text, out, axis=0)
             aux_text = np.delete(aux_text, out, axis=1)
+
+            # cannot happen that train_user [u] == []
+
 
             diff = difference(original_values_image, aux_img) + 0.5*difference(original_values_text, aux_text)
 

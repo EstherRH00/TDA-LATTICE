@@ -165,6 +165,9 @@ class Data(object):
         def sample_pos_items_for_u(u, num):
             pos_items = self.train_items[u]
             n_pos_items = len(pos_items)
+            if(pos_items == []):
+                print("AAAAAAAAAAA")
+                return []
             pos_batch = []
             while True:
                 if len(pos_batch) == num: break
