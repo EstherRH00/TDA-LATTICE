@@ -23,23 +23,22 @@ def txt_to_csv(input_file, output_file, delimiter='\t', field_1 = 'asin', field_
 
 def to_other_models(name = 'Baby'):
     folder = './' + name + '/'
-    res_folder = folder + 'for_other_models/'
 
     txt_to_csv(folder+'5-core/item_list.txt',folder + 'i_id_mapping.csv', field_2='itemID')
     txt_to_csv(folder+'5-core/user_list.txt',folder + 'u_id_mapping.csv', field_2 = 'userID' )
 
     # 1. Replace ID only of the valid ones!
 
-    df = pd.read_csv(res_folder + "ratings_%s.csv" % name, names=['userID', 'itemID', 'rating', 'timestamp'], header=None)
+    df = pd.read_csv(folder + "meta-data/ratings_%s.csv" % name, names=['userID', 'itemID', 'rating', 'timestamp'], header=None)
 
-    mapping_df = pd.read_csv(res_folder + 'u_id_mapping.csv', sep='\t',  names=['userID', 'newUserID'], header=0)
+    mapping_df = pd.read_csv(folder + 'u_id_mapping.csv', sep='\t',  names=['userID', 'newUserID'], header=0)
 
     merged_df = pd.merge(df, mapping_df, how='outer', on='userID')
     merged_df = merged_df.dropna()
     merged_df = merged_df.drop(columns=['userID'])
 
 
-    mapping_df = pd.read_csv(res_folder + 'i_id_mapping.csv', sep='\t',  names=['itemID', 'newItemID'], header=0)
+    mapping_df = pd.read_csv(folder + 'i_id_mapping.csv', sep='\t',  names=['itemID', 'newItemID'], header=0)
 
     merged_df = pd.merge(merged_df, mapping_df, how='outer', on='itemID')
     merged_df = merged_df.dropna()
@@ -71,5 +70,3 @@ def to_other_models(name = 'Baby'):
             merged_df.at[row[0], 'x_label'] = 1
 
     merged_df.to_csv(folder + name + '.inter', sep='\t', index=False)
-
-to_other_models()
