@@ -55,7 +55,8 @@ def compute_persistence(gr):
     # 0. fix the fraoh
     epsilon = 0.000001
     np.fill_diagonal(gr, 1)
-    # remove 1 from outside the diagonal
+
+    # remove 1 from outside the diagonal (they are the same node)
     out = [j for i in range(gr.shape[0]) for j in range(i + 1, gr.shape[1]) if
            abs(gr[i, j] - 1) < epsilon]
 
@@ -65,6 +66,8 @@ def compute_persistence(gr):
     # dissimilarity
     gr = 1 - gr
     gr[abs(gr - 1) < epsilon] = np.inf
+
+    gr = np.abs(gr)
 
     persistence = FlagserPersistence().fit_transform([gr])[0]
 
@@ -138,6 +141,8 @@ def compute_graph_tda(graph, num_landscapes = 10, points_per_landscape = 100, re
     # dissimilarity
     graph = 1 - graph
     graph[ abs(graph - 1) < epsilon] = np.inf
+
+    graph = np.abs(graph)
 
     # 1. Persistence
     persistence = FlagserPersistence().fit_transform([graph])
@@ -572,11 +577,12 @@ class LATTICE_TDA_each_graph(nn.Module):
             raise Exception("Invalid parameter; only lightgcn is prepared for TDA")
 
 
-class LATTICE_TDA_dropout(nn.Module):
-    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, norm_adj, data_generator, n_dropout):
+class LATTICE_TDA_drop_nodes(nn.Module):
+    def __init__(self, n_users, n_items, embedding_dim, weight_size, dropout_list, image_feats, text_feats, norm_adj,
+                 data_generator, percent_nodes_dropped):
         super().__init__()
         set_seed(args.seed)
-        p = image_feats.shape[0] // n_dropout
+        p = image_feats.shape[0] // percent_nodes_dropped
 
         self.n_users = n_users
         self.n_items = n_items - p
@@ -623,11 +629,11 @@ class LATTICE_TDA_dropout(nn.Module):
         best_out = None
 
         for _ in range(10):
-            empty_users = True
 
             aux_img = image_2.copy()
             aux_text = image_2.copy()
 
+            empty_users = True
             out = []
             tries = 0
             while(empty_users or len(out) < p):
@@ -641,7 +647,7 @@ class LATTICE_TDA_dropout(nn.Module):
                 if(not empty_users):
                     out.append(aux)
                 if tries == 3*p:
-                    raise Exception("Todo mal")
+                    raise Exception("Max tries exceeded")
 
             aux_img = np.delete(aux_img, out, axis=0)
             aux_img = np.delete(aux_img, out, axis=1)

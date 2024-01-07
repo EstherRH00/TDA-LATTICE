@@ -51,9 +51,9 @@ def parse_args():
                         help='Image TDA?')
     parser.add_argument('--textTDA', type=bool, default=False,
                         help='Text TDA?')
-    parser.add_argument('--nDropout', type=int, default=25,
-                        help='tda dropout number')
+    parser.add_argument('--percentNodesDropped', type=int, default=25,
+                        help='TDA drop nodes % dropped')
     parser.add_argument('--model_name', nargs='?', default='lattice',
-                        help='Specify the model name: {lattice, lattice_tda_first_graph, lattice_tda_each_graph, lattice_tda_dropout, mf, ngcf, lightgcn}')
+                        help='Specify the model name: {lattice, lattice_tda_first_graph, lattice_tda_each_graph, lattice_tda_drop_nodes, mf, ngcf, lightgcn}')
 
     return parser.parse_args()

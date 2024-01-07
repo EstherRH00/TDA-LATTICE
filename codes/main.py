@@ -14,7 +14,7 @@ import torch.optim as optim
 import torch.sparse as sparse
 
 from utility.parser import parse_args
-from Models import LATTICE, MF, LightGCN, NGCF, LATTICE_TDA_first_graph, LATTICE_TDA_each_graph, LATTICE_TDA_dropout
+from Models import LATTICE, MF, LightGCN, NGCF, LATTICE_TDA_first_graph, LATTICE_TDA_each_graph, LATTICE_TDA_drop_nodes
 from utility.batch_test import *
 
 args = parse_args()
@@ -42,7 +42,7 @@ class Trainer(object):
         self.imageTDA = args.imageTDA
         self.textTDA = args.textTDA
 
-        print(self.imageTDA, self.textTDA, self.model_name,  args.nDropout)
+        print(self.imageTDA, self.textTDA, self.model_name,  args.percentNodesDropped)
 
         if(self.imageTDA):
             image_feats = np.load('../data/{}/image_feat_TDA.npy'.format(args.dataset))
@@ -53,14 +53,14 @@ class Trainer(object):
         else:
             text_feats = np.load('../data/{}/text_feat.npy'.format(args.dataset))
 
-        if (self.model_name == 'lattice_tda_dropout'):
+        if (self.model_name == 'lattice_tda_drop_nodes'):
             self.norm_adj = data_config['norm_adj']
             self.norm_adj = self.sparse_mx_to_torch_sparse_tensor(self.norm_adj).float().to(device)
 
-            self.model = LATTICE_TDA_dropout(self.n_users, self.n_items, self.emb_dim, self.weight_size,
-                                             self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator,  args.nDropout)
+            self.model = LATTICE_TDA_drop_nodes(self.n_users, self.n_items, self.emb_dim, self.weight_size,
+                                             self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator,  args.percentNodesDropped)
             self.norm_adj = self.model.norm_adj
-            self.n_items = self.n_items - image_feats.shape[0] // args.nDropout
+            self.n_items = self.n_items - image_feats.shape[0] // args.percentNodesDropped
         else:
 
             self.norm_adj = data_config['norm_adj']
@@ -82,7 +82,8 @@ class Trainer(object):
                 self.model = NGCF(self.n_users, self.n_items, self.emb_dim, self.weight_size, self.mess_dropout,
                                 image_feats, text_feats)
             else:
-                raise Exception("Invalid parameter; choose between {lattice, lattice_tda_first_graph, lattice_tda_each_graph, lattice_tda_dropout, mf, ngcf, lightgcn}")
+                raise Exception("Invalid parameter; choose between {lattice, lattice_tda_first_graph, "
+                                "lattice_tda_each_graph, lattice_tda_drop_nodes, mf, ngcf, lightgcn}")
 
 
 
@@ -210,7 +211,7 @@ class Trainer(object):
 
         print(test_ret)
 
-        return "./logs/" + str(self.model_name) + str(args.nDropout)+ "-" + str(args.dataset) + "-" + str(self.textTDA) + "-" + str(self.imageTDA), "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
+        return "./logs/" + str(self.model_name) + str(args.percentNodesDropped)+ "-" + str(args.dataset) + "-" + str(self.textTDA) + "-" + str(self.imageTDA), "Epoch: " + str(epoch) + "\nResult: " + str(test_ret)
 
     def bpr_loss(self, users, pos_items, neg_items):
         pos_scores = torch.sum(torch.mul(users, pos_items), dim=1)
@@ -274,11 +275,8 @@ if __name__ == '__main__':
 
 '''
 
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
-python main.py --dataset Digital_Music --model lattice_tda_each_graph
+
 python main.py --dataset Baby --model lattice_tda_each_graph
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
-python main.py --dataset Digital_Music --model lattice_tda_each_graph
 python main.py --dataset Baby --model lattice_tda_each_graph
 python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
 python main.py --dataset Digital_Music --model lattice_tda_each_graph
