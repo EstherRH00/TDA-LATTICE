@@ -397,7 +397,6 @@ class LATTICE_TDA_first_graph(nn.Module):
 
         self.tda_drop = nn.Dropout(0.1)
         # self.tda_drop = nn.Identity()
-
         # Capa lineal sobre all_embeddings + descriptores
         self.separated_projection = nn.Linear(args.feat_embed_dim + len(self.tda_separated), args.feat_embed_dim)
 
@@ -500,11 +499,11 @@ class LATTICE_TDA_each_graph(nn.Module):
         image_adj = build_knn_neighbourhood(image_adj, topk=args.topk)
         image_adj = compute_normalized_laplacian(image_adj)
 
-
         text_adj = build_sim(self.text_embedding.weight.detach())
         text_adj = build_knn_neighbourhood(text_adj, topk=args.topk)
         text_adj = compute_normalized_laplacian(text_adj)
 
+        self.separated_projection = nn.Linear(args.feat_embed_dim + 464, args.feat_embed_dim)
 
         self.text_original_adj = text_adj.to(device)
         self.image_original_adj = image_adj.to(device)
@@ -529,10 +528,9 @@ class LATTICE_TDA_each_graph(nn.Module):
             self.text_adj = build_knn_neighbourhood(self.text_adj, topk=args.topk)
 
 
-            tda_image = compute_graph_tda(self.image_adj.detach())
-            tda_text = compute_graph_tda(self.text_adj.detach())
+            tda_image = compute_graph_tda(self.image_adj.detach().numpy())
+            tda_text = compute_graph_tda(self.image_adj.detach().numpy())
             self.tda_separated = torch.cat((tda_image, tda_text))
-
 
             learned_adj = weight[0] * self.image_adj + weight[1] * self.text_adj
             learned_adj = compute_normalized_laplacian(learned_adj)

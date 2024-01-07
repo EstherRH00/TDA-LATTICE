@@ -274,12 +274,6 @@ if __name__ == '__main__':
 
 '''
 
-python main.py --dataset Baby --model lattice_tda_dropout --nDropout 5
-python main.py --dataset Baby --model lattice_tda_dropout --nDropout 10
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
-python main.py --dataset Digital_Music --model lattice_tda_each_graph
-python main.py --dataset Baby --model lattice_tda_each_graph
-python main.py --dataset Baby --model lattice
 python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
 python main.py --dataset Digital_Music --model lattice_tda_each_graph
 python main.py --dataset Baby --model lattice_tda_each_graph
@@ -292,5 +286,7 @@ python main.py --dataset Baby --model lattice_tda_each_graph
 python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
 python main.py --dataset Digital_Music --model lattice_tda_each_graph
 python main.py --dataset Baby --model lattice_tda_each_graph
-
+python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Baby --model lattice_tda_each_graph
 '''
