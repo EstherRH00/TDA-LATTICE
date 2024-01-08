@@ -60,7 +60,7 @@ class Trainer(object):
             self.model = LATTICE_TDA_drop_nodes(self.n_users, self.n_items, self.emb_dim, self.weight_size,
                                              self.mess_dropout, image_feats, text_feats, self.norm_adj, data_generator,  args.percentNodesDropped)
             self.norm_adj = self.model.norm_adj
-            self.n_items = self.n_items - image_feats.shape[0] // args.percentNodesDropped
+            self.n_items = self.n_items - image_feats.shape[0] * args.percentNodesDropped // 100
         else:
 
             self.norm_adj = data_config['norm_adj']
@@ -275,11 +275,12 @@ if __name__ == '__main__':
 
 '''
 
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
-python main.py --dataset Musical_Instruments --model lattice_tda_each_graph
+python main.py --dataset Musical_Instruments --model lattice_tda_drop_nodes --percentNodesDropped 1
+python main.py --dataset Musical_Instruments --model lattice_tda_drop_nodes --percentNodesDropped 2
+
 python main.py --dataset Baby --model lattice_tda_each_graph
-python main.py --dataset Baby --model lattice_tda_each_graph
-python main.py --dataset Baby --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
+python main.py --dataset Digital_Music --model lattice_tda_each_graph
 
 '''

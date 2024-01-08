@@ -582,7 +582,7 @@ class LATTICE_TDA_drop_nodes(nn.Module):
                  data_generator, percent_nodes_dropped):
         super().__init__()
         set_seed(args.seed)
-        p = image_feats.shape[0] // percent_nodes_dropped
+        p = image_feats.shape[0] * percent_nodes_dropped // 100
 
         self.n_users = n_users
         self.n_items = n_items - p
@@ -627,7 +627,7 @@ class LATTICE_TDA_drop_nodes(nn.Module):
         # remove 25% of nodes, 10 tries, and keep the best
         smallest_difference = None
         best_out = None
-
+        print("p", p)
         for _ in range(10):
 
             aux_img = image_2.copy()
